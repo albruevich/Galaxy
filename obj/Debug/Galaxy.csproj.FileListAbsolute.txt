@@ -1,0 +1,6 @@
+/Users/a.bruiaka/Studing/Galaxy/bin/Debug/Galaxy.exe
+/Users/a.bruiaka/Studing/Galaxy/bin/Debug/Galaxy.pdb
+/Users/a.bruiaka/Studing/Galaxy/obj/Debug/Galaxy.csproj.AssemblyReference.cache
+/Users/a.bruiaka/Studing/Galaxy/obj/Debug/Galaxy.csproj.CoreCompileInputs.cache
+/Users/a.bruiaka/Studing/Galaxy/obj/Debug/Galaxy.exe
+/Users/a.bruiaka/Studing/Galaxy/obj/Debug/Galaxy.pdb
