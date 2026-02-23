@@ -15,8 +15,8 @@
 //#define LESSON_1
 //#define LESSON_2
 //#define LESSON_3
-#define LESSON_4
-//#define LESSON_5
+//#define LESSON_4
+#define LESSON_5
 //#define LESSON_6
 //#define LESSON_7
 //#define LESSON_8
@@ -252,6 +252,7 @@ namespace Galaxy
     }
 
 #elif LESSON_3 // учим корабль стрелять (пока только одной пулей за раз)
+               // Создаем новый класс GameObject
 
     class MainClass { public static void Main() => new Game().Run(); }
 
@@ -265,7 +266,7 @@ namespace Galaxy
 
         Renderer renderer;
 
-        Bullet bullet; // новая переменная для пули игрока (пока только одна пуля одновременно)
+        GameObject bullet; // новая переменная для пули игрока (пока только одна пуля одновременно)
 
         public void Run()
         {
@@ -305,7 +306,7 @@ namespace Galaxy
             else if (info.Key == ConsoleKey.RightArrow)
                 shipX = Math.Min(screenWidth - 2, shipX + 1);
             else if (info.Key == ConsoleKey.UpArrow && bullet == null) //если нажата стрелка вверх
-                bullet = new Bullet(shipX, shipY); // создаём новую пулю на позиции корабля, если пули сейчас нет
+                bullet = new GameObject(shipX, shipY); // создаём новую пулю на позиции корабля, если пули сейчас нет
         }
 
         void MovePlayerBullet()
@@ -369,7 +370,7 @@ namespace Galaxy
             Console.WriteLine(builder);
         }
 
-        public void Render(int oldShipX, int newShipX, int shipY, Bullet bullet)
+        public void Render(int oldShipX, int newShipX, int shipY, GameObject bullet)
         {
             builder[FindIndex(oldShipX, shipY)] = emptyChar;
             builder[FindIndex(newShipX, shipY)] = shipChar;
@@ -387,7 +388,7 @@ namespace Galaxy
         // ❗ Почему Replace с индексом, а не builder[...]:
         // Если пуля была на той же позиции, что корабль, builder[...] = emptyChar
         // то затирается символ корабля (#). А Replace с индексом меняет только символ пули (^)
-        public void ClearBullet(Bullet bullet) => builder.Replace(bulletChar, emptyChar, FindIndex(bullet.X, bullet.OldY), 1);
+        public void ClearBullet(GameObject bullet) => builder.Replace(bulletChar, emptyChar, FindIndex(bullet.X, bullet.OldY), 1);
 
         int FindIndex(int valX, int valY)
         {
@@ -397,15 +398,15 @@ namespace Galaxy
         }
     }
 
-    //Новый класс пули
-    class Bullet
+    //Новый класс GameObject
+    class GameObject
     {
-        public int Y { get; set; } //  координата Y пули
-        public int X { get; }       // координата X пули (фиксирована на момент выстрела)
-        public int OldY { get; set; } // предыдущая Y пули для очистки символа      
+        public int Y { get; set; }   //  координата Y 
+        public int X { get; set; }   // координата X 
+        public int OldY { get; set; } // предыдущая Y для очистки символа      
 
-        // конструктор пули
-        public Bullet(int x, int y)
+        // конструктор 
+        public GameObject(int x, int y)
         {
             X = x;
             Y = y;
@@ -430,7 +431,7 @@ namespace Galaxy
 
         // Теперь вместо одной пули храним массив пуль. Размер массива ограничивает максимальное количество пуль одновременно.
         // Пуль будет не больше чем высота экрана, минус пол и потолок
-        Bullet[] bullets = new Bullet[screenHeight - 2];        
+        GameObject[] bullets = new GameObject[screenHeight - 2];        
 
         public void Run()
         {
@@ -485,7 +486,7 @@ namespace Galaxy
 
                 if (emptyIndex != -1) // если пустой индекс найден, то создаем пулю
                 {
-                    Bullet bullet = new Bullet(shipX, shipY); //создаем объект пули
+                    GameObject bullet = new GameObject(shipX, shipY); //создаем объект пули
                     bullets[emptyIndex] = bullet; //устанавливаем ее в массив, nеперь пули могут существовать параллельно.                    
                 }
             }
@@ -498,7 +499,7 @@ namespace Galaxy
             // Это хорошая привычка при работе с коллекциями, где возможны удаления.
             for (int i = bullets.Length - 1; i >= 0; i--)
             {
-                Bullet bullet = bullets[i];
+                GameObject bullet = bullets[i];
 
                 if (bullet == null)
                     continue; //если пули нет, то пропускаем этот виток цикла
@@ -559,7 +560,7 @@ namespace Galaxy
             Console.WriteLine(builder);
         }
 
-        public void Render(int oldShipX, int newShipX, int shipY, Bullet[] bullets)
+        public void Render(int oldShipX, int newShipX, int shipY, GameObject[] bullets)
         {
             builder[FindIndex(oldShipX, shipY)] = emptyChar;
             builder[FindIndex(newShipX, shipY)] = shipChar;
@@ -577,7 +578,7 @@ namespace Galaxy
             Console.WriteLine(builder);
         }
 
-        public void ClearBullet(Bullet bullet) => builder.Replace(bulletChar, emptyChar, FindIndex(bullet.X, bullet.OldY), 1);
+        public void ClearBullet(GameObject bullet) => builder.Replace(bulletChar, emptyChar, FindIndex(bullet.X, bullet.OldY), 1);
 
         int FindIndex(int valX, int valY)
         {
@@ -587,182 +588,278 @@ namespace Galaxy
         }
     }
 
-    class Bullet
+    class GameObject
     {
         public int Y { get; set; }
-        public int X { get; }
+        public int X { get; set; }
         public int OldY { get; set; }
 
-        public Bullet(int x, int y)
+        public GameObject(int x, int y)
         {
             X = x;
             Y = y;
         }
     }
 
-#elif LESSON_5
+#elif LESSON_5 
+    // В этом уроке игра переходит от простого управления объектами к взаимодействию между ними.
+    // Мы вводим абстрактный базовый класс, реализуем наследование, добавляем врага и столкновения
+    // Это первый настоящий шаг к архитектуре игры.
 
-    //УРОК 5
-    //рождаем одного врага, попадание пули во врага, уничтожение пули после попадания, уничтожение врага   
-    class MainClass
+    class MainClass { public static void Main() => new Game().Run(); }
+
+    class Game
     {
         const int screenWidth = 21;
         const int screenHeight = 12;
-        const int shipY = 2; //корабль всегда на 2-й кооординате по вертикали
-        const char cell = ' ';
-        const char ship = '#';
-        const char dot = '.';
-        const char line = '|';
-        const char bullet = '^'; //пуля
-        const char enemy = '@'; //враг 
+        int shipX;
+        const int shipY = 2;
+        bool isGameRunning = true;
 
-        public static void Main()
+        Renderer renderer;
+
+        // Раньше этот массив был GameObject[]. Теперь массив хранит конкретный тип Bullet.        
+        Bullet[] bullets = new Bullet[screenHeight - 2]; //Максимум пуль на экране (по высоте игрового поля без границ)
+
+        Random rnd = new Random(); // генератор случайных чисел
+
+        // В игре появляется еще один тип игрового объекта.
+        Enemy enemy = null; //пока единственный объект врага
+      
+        public void Run()
         {
-            //начальные установки
-            //x - это позиция корабля по горизонтали
-            int shipX = screenWidth / 2;
+            Init();
+            renderer.BuildBoard();
 
-            //создаем массивы пуль                 
-            int[] bulletX = new int[screenHeight - 2];
-            int[] bulletY = new int[screenHeight - 2];
+            //Renderer теперь умеет рисовать не только корабль, но и врага.
+            renderer.DrawFirstFrame(shipX, shipY, enemy);            
 
-            //заполняем массивы стартовыми пустыми значениями   
-            for (int i = 0; i < bulletX.Length; i++)
+            while (isGameRunning)
             {
-                bulletX[i] = 0;
-                bulletY[i] = 0;
+                int oldX = shipX;
+
+                HandleInput();
+                MovePlayerBullets();
+
+                renderer.Render(oldX, shipX, shipY, bullets);
+            }
+        }
+
+        void Init()
+        {
+            shipX = screenWidth / 2;
+            renderer = new Renderer(screenWidth, screenHeight);
+
+            // Создание экземпляра Enemy — теперь используется наследник GameObject.
+            int enemyX = rnd.Next(1, screenWidth - 1); //случайный Х в пределах от 1 до ширины экрана (стенки исключаются)
+            int enemyY = screenHeight - 1;             // Y под потолком (из-за метода FindIndex начало координат внизу)
+            enemy = new Enemy(enemyX, enemyY);          
+        }
+
+        void HandleInput()
+        {
+            ConsoleKeyInfo info = Console.ReadKey(true);
+
+            if (info.Key == ConsoleKey.Escape)
+            {
+                isGameRunning = false;
+                return;
             }
 
-            Random rnd = new Random();                       
-          
-            //враг, задаем ему стартовые координаты
-            int enemyX = rnd.Next(1, screenWidth); //случайный Х 
-            int enemyY = screenHeight - 1; // Y под потолком 
+            if (info.Key == ConsoleKey.LeftArrow)
+                shipX = Math.Max(1, shipX - 1);
+            else if (info.Key == ConsoleKey.RightArrow)
+                shipX = Math.Min(screenWidth - 2, shipX + 1);
+            else if (info.Key == ConsoleKey.UpArrow)
+            {
+                int emptyIndex = -1;
 
-            //создание основной строки для распечатки
-            StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bullets.Length; i++)
+                    if (bullets[i] == null)
+                    {
+                        emptyIndex = i;
+                        break;
+                    }
 
-            //заполняем поле необходимыми символами: '.', ' ', '|'
+                if (emptyIndex != -1)
+                {
+                    Bullet bullet = new Bullet(shipX, shipY);
+                    bullets[emptyIndex] = bullet;
+                }
+            }
+        }
+
+        void MovePlayerBullets()
+        {
+            for (int i = bullets.Length - 1; i >= 0; i--)
+            {
+                Bullet bullet = bullets[i];
+
+                if (bullet == null)
+                    continue;
+
+                // Метод возвращает результат движения: попала, вышла за экран или летит дальше.
+                // Удобнее, чем просто true/false.
+                BulletMoveResult result = bullet.Move(screenHeight, enemy);               
+
+                //если пуля попала по врагу или вышла за экран, то ...
+                if (result == BulletMoveResult.OutOfBounds || result == BulletMoveResult.HitEnemy)
+                {
+                    // ... удаляем пулю
+                    renderer.ClearGameObject(bullet);
+                    bullets[i] = null;
+
+                    // ... если пуля попала по врагу, то удаляем врага
+                    if (result == BulletMoveResult.HitEnemy)
+                    {
+                        renderer.ClearGameObject(enemy);
+                        enemy = null;                       
+                    }
+                }
+            }
+        }
+    }
+
+    class Renderer
+    {
+        int screenWidth;
+        int screenHeight;
+
+        StringBuilder builder;
+
+        const char dotChar = '.';
+        const char shipChar = '#';
+        const char wallChar = '|';
+        const char emptyChar = ' ';
+
+        public Renderer(int width, int height)
+        {
+            screenWidth = width;
+            screenHeight = height;
+            builder = new StringBuilder();
+        }
+
+        public void BuildBoard()
+        {
             for (int bY = 0; bY < screenHeight; bY++)
             {
                 for (int bX = 0; bX < screenWidth; bX++)
                 {
                     if (bY == 0 || bY == screenHeight - 1)
-                    {
-                        builder.Append(dot);
-                    }
+                        builder.Append(dotChar);
+                    else if (bX == 0 || bX == screenWidth - 1)
+                        builder.Append(wallChar);
                     else
-                    {
-                        if (bX == 0 || bX == screenWidth - 1)
-                            builder.Append(line);
-                        else
-                            builder.Append(cell);
-                    }
+                        builder.Append(emptyChar);
                 }
-
                 builder.Append('\n');
             }
-
-            //рисуем корабль на старте           
-            builder.Replace(cell, ship, CalculateCoords(shipX, shipY), 1); 
-
-            //рисуем врага на старте          
-            builder.Replace(cell, enemy, CalculateCoords(enemyX, enemyY), 1);            
-
-            //распечатка первого кадра
-            Console.WriteLine(builder);
-
-            //игровой цикл
-            while (true)
-            {
-                ConsoleKeyInfo info = Console.ReadKey();
-
-                int oldX = shipX;
-
-                if (info.Key == ConsoleKey.Escape)                
-                    break;    
-
-                if (info.Key == ConsoleKey.LeftArrow)
-                {
-                    shipX--;
-                    shipX = Math.Max(1, shipX);
-                }
-                else if (info.Key == ConsoleKey.RightArrow)
-                {
-                    shipX++;
-                    shipX = Math.Min(screenWidth - 2, shipX);
-                }
-                else if (info.Key == ConsoleKey.UpArrow)
-                {
-                    int emptyIndex = -1;
-
-                    for (int i = 0; i < bulletX.Length; i++)
-                    {
-                        if (bulletX[i] == 0)
-                        {
-                            emptyIndex = i;
-                            break;
-                        }
-                    }
-
-                    if (emptyIndex != -1)
-                    {
-                        bulletX[emptyIndex] = shipX;
-                        bulletY[emptyIndex] = shipY;
-                    }
-                }
-
-                builder.Replace(ship, cell, CalculateCoords(oldX, shipY), 1); 
-                builder.Replace(cell, ship, CalculateCoords(shipX, shipY), 1);    
-
-                for (int i = 0; i < bulletX.Length; i++)
-                {
-                    if (bulletX[i] != 0)
-                    {
-                        builder.Replace(bullet, cell, CalculateCoords(bulletX[i], bulletY[i]), 1); 
-
-                        bulletY[i]++;
-
-                        //проверка, попала ли пуля во врага (координаты совпадают)
-                        bool bulletHitEnemy = bulletX[i] == enemyX && bulletY[i] == enemyY; 
-                       
-                        if (bulletY[i] > screenHeight - 1 || bulletHitEnemy) //удаление пули в 2-х случаях: когда она достигла потолка или попала по врагу
-                        {
-                            bulletX[i] = 0;
-                            bulletY[i] = 0;
-
-                            //если пуля попала то удаляем врага
-                            if (bulletHitEnemy) 
-                            {
-                                //очищаем экран вот врага
-                                builder.Replace(enemy, cell, CalculateCoords(enemyX, enemyY), 1); 
-
-                                //обнуляем значения врага
-                                enemyX = 0; 
-                                enemyY = 0; 
-                            }
-
-                            continue;
-                        }
-
-                        //отрисовка пули
-                        builder.Replace(cell, bullet, CalculateCoords(bulletX[i], bulletY[i]), 1);
-                    }
-                }
-
-                //обновляем экран (очищаем его)
-                Console.Clear();
-                //и рисуем новый экран
-                Console.WriteLine(builder);
-            }
-                   
-            int CalculateCoords(int valX, int valY) 
-            {
-                int y = screenHeight - valY; //отступ сверху до игрового объекта
-                int width = screenWidth + 1; //ширины экрана + 1 ( +1 - это прибавка , так как в конце каждой строки ..... есть еще символ \n, который тоже занимает индекс)
-                return valX + y * width;    //находим индекс корабля: позиция корабля + высота * на ширину экрана
-            }          
         }
+
+        // Теперь метод умеет рисовать не только корабль, но и врага.        
+        public void DrawFirstFrame(int shipX, int shipY, Enemy enemy)
+        {
+            builder[FindIndex(shipX, shipY)] = shipChar;
+          
+            // Если враг существует то рисуем его символ
+            if (enemy != null)
+                builder[FindIndex(enemy.X, enemy.Y)] = enemy.Symbol;
+
+            Console.WriteLine(builder);
+        }
+
+        public void Render(int oldShipX, int newShipX, int shipY, Bullet[] bullets)
+        {
+            builder[FindIndex(oldShipX, shipY)] = emptyChar;
+            builder[FindIndex(newShipX, shipY)] = shipChar;
+
+            foreach (var bullet in bullets)
+                if (bullet != null)
+                {
+                    ClearGameObject(bullet);
+                     builder[FindIndex(bullet.X, bullet.Y)] = bullet.Symbol;
+                }
+
+            Console.SetCursorPosition(0, 0);
+            Console.WriteLine(builder);
+        }
+
+        // В прошлом уроке был ClearBullet и использовался bulletChar.
+        // Теперь метод универсальный — он принимает любой GameObject и использует его Symbol.
+        // Это первый шаг к полиморфизму.
+        public void ClearGameObject(GameObject go) =>
+            builder.Replace(go.Symbol, emptyChar, FindIndex(go.X, go.OldY), 1);
+
+        int FindIndex(int valX, int valY)
+        {
+            int y = screenHeight - valY;
+            int width = screenWidth + 1;
+            return valX + y * width;
+        }
+    }
+    
+    // GameObject стал abstract — теперь нельзя создать просто "какой-то объект", но конкретный наследник        
+    abstract class GameObject
+    {
+        public int Y { get; set; }
+        public int X { get; set; }
+        public int OldY { get; set; }
+
+        //абстрактное свойство которое ОБЯЗАН реализовать каждый наследник.
+        public abstract char Symbol { get; }
+
+        public GameObject(int x, int y)
+        {
+            X = x;
+            Y = y;
+            OldY = Y;
+        }
+    }
+
+    // Bullet наследуется от GameObject, таким образом у него есть все свойства и методы родителя
+    class Bullet : GameObject
+    {
+        // override — реализация (переопределение) абстрактного свойства родителя
+        public override char Symbol => '^';
+
+        // : base(x, y) — вызов конструктора родительского класса.
+        public Bullet(int x, int y) : base(x, y) { }
+
+        // Метод Move отвечает только за движение пули и возвращает результат этого движения.       
+        public BulletMoveResult Move(int screenHeight, Enemy enemy)
+        {
+            OldY = Y; 
+            Y++;     
+
+            // если координаты пули совпали с координатами врага — считаем, что произошло попадание
+            if (enemy != null && X == enemy.X && Y == enemy.Y)
+                return BulletMoveResult.HitEnemy;
+
+            // если пуля вышла за пределы экрана — сообщаем об этом
+            if (Y > screenHeight - 1)
+                return BulletMoveResult.OutOfBounds;
+
+            // если ничего особенного не произошло — просто продолжаем движение
+            return BulletMoveResult.None;
+        }
+    }
+
+    // Enemy наследуется от GameObject.
+    class Enemy : GameObject
+    {
+        // override — реализация (переопределение) абстрактного свойства родителя
+        public override char Symbol => '@';
+
+        // : base(x, y) — вызов конструктора родительского класса.
+        public Enemy(int x, int y) : base(x, y) { }
+    }
+
+    //возможные исходы движения пули 
+    enum BulletMoveResult
+    {
+        None,        
+        HitEnemy,   
+        OutOfBounds  
     }
 
 #elif LESSON_6
