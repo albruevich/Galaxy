@@ -14,8 +14,8 @@
 
 //#define LESSON_1
 //#define LESSON_2
-#define LESSON_3
-//#define LESSON_4
+//#define LESSON_3
+#define LESSON_4
 //#define LESSON_5
 //#define LESSON_6
 //#define LESSON_7
@@ -280,7 +280,7 @@ namespace Galaxy
                 HandleInput();     
                 MovePlayerBullet(); // движение пули вверх
 
-                renderer.Render(oldX, shipX, shipY, bullet); // отрисовка пули вместе с кораблем
+                renderer.Render(oldX, shipX, shipY, bullet); // отрисовка корабля теперь вместе с пулей
             }
         }
 
@@ -397,6 +397,7 @@ namespace Galaxy
         }
     }
 
+    //Новый класс пули
     class Bullet
     {
         public int Y { get; set; } //  координата Y пули
@@ -412,170 +413,190 @@ namespace Galaxy
     }
 
 
-#elif LESSON_4
-    
-    //учим корабль стрелять несколькими пулями, создаем массив пуль
-    class MainClass
+#elif LESSON_4 //Учим корабль стрелять несколькими пулями, создаем массив пуль
+               //Переходим от управления одним объектом (пули) к управлению коллекцией объектов.
+
+    class MainClass { public static void Main() => new Game().Run(); }
+
+    class Game
     {
         const int screenWidth = 21;
         const int screenHeight = 12;
-        const int shipY = 2; //корабль всегда на 2-й кооординате по вертикали
-        const char cell = ' ';
-        const char ship = '#';
-        const char dot = '.';
-        const char line = '|';
-        const char bullet = '^'; //пуля             
+        int shipX;
+        const int shipY = 2;
+        bool isGameRunning = true;
 
-        public static void Main()
+        Renderer renderer;
+
+        // Теперь вместо одной пули храним массив пуль. Размер массива ограничивает максимальное количество пуль одновременно.
+        // Пуль будет не больше чем высота экрана, минус пол и потолок
+        Bullet[] bullets = new Bullet[screenHeight - 2];        
+
+        public void Run()
         {
-            //начальные установки
-            //x - это позиция корабля по горизонтали
-            int shipX = screenWidth / 2;
+            Init();
+            renderer.BuildBoard();
+            renderer.DrawFirstFrame(shipX, shipY);
 
-            
-            //создаем массивы пуль                 
-            int[] bulletX = new int[screenHeight - 2]; //максимальное кол-во пуль на два меньше,   
-            int[] bulletY = new int[screenHeight - 2]; //потому что у экрана есть пол (-1 штука) и потолок (-1 штука)
-
-            
-            //заполняем массивы стартовыми пустыми значениями   
-            for (int i = 0; i < bulletX.Length; i++)
+            while (isGameRunning)
             {
-                bulletX[i] = 0;
-                bulletY[i] = 0;
+                int oldX = shipX;
+
+                HandleInput();
+                MovePlayerBullets(); // Метод теперь двигает ВСЕ пули, а не одну.               
+
+                renderer.Render(oldX, shipX, shipY, bullets); // Передаем в Renderer массив пуль вместо одной пули.
+            }
+        }
+
+        void Init()
+        {
+            shipX = screenWidth / 2;
+            renderer = new Renderer(screenWidth, screenHeight);
+        }
+
+        void HandleInput()
+        {
+            ConsoleKeyInfo info = Console.ReadKey(true);
+
+            if (info.Key == ConsoleKey.Escape)
+            {
+                isGameRunning = false;
+                return;
             }
 
-            //создание основной строки для распечатки
-            StringBuilder builder = new StringBuilder();
+            if (info.Key == ConsoleKey.LeftArrow)
+                shipX = Math.Max(1, shipX - 1);
+            else if (info.Key == ConsoleKey.RightArrow)
+                shipX = Math.Min(screenWidth - 2, shipX + 1);
+            else if (info.Key == ConsoleKey.UpArrow)
+            {
+                // Раньше мы просто проверяли bullet == null.
+                // Теперь нужно найти свободную ячейку в массиве.
+                int emptyIndex = -1;
 
-            //заполняем поле необходимыми символами: '.', ' ', '|'
+                //Проходим по массиву и ищем null — это свободное место для новой пули.
+                for (int i = 0; i < bullets.Length; i++)
+                    if (bullets[i] == null) // если по текущему индексу i нет пули значит...
+                    {
+                        emptyIndex = i; // ... пустой индекс найден
+                        break; //выход из массива, так как пустой индекс найден
+                    }               
+
+                if (emptyIndex != -1) // если пустой индекс найден, то создаем пулю
+                {
+                    Bullet bullet = new Bullet(shipX, shipY); //создаем объект пули
+                    bullets[emptyIndex] = bullet; //устанавливаем ее в массив, nеперь пули могут существовать параллельно.                    
+                }
+            }
+        }
+
+        void MovePlayerBullets()
+        {
+            // Идем с конца массива к началу. Это безопасный подход, если внутри цикла мы удаляем элементы (bullets[i] = null).            
+            // При обратном проходе мы не рискуем пропустить элементы. 
+            // Это хорошая привычка при работе с коллекциями, где возможны удаления.
+            for (int i = bullets.Length - 1; i >= 0; i--)
+            {
+                Bullet bullet = bullets[i];
+
+                if (bullet == null)
+                    continue; //если пули нет, то пропускаем этот виток цикла
+
+                bullet.OldY = bullet.Y; 
+
+                bullet.Y++; 
+
+                if (bullet.Y > screenHeight - 1)
+                {
+                    renderer.ClearBullet(bullet);
+                    bullets[i] = null; // Теперь мы удаляем конкретную пулю из массива, освобождая место для будущих выстрелов.
+                }
+            }
+        }
+    }
+
+    class Renderer
+    {
+        int screenWidth;
+        int screenHeight;
+
+        StringBuilder builder;
+
+        const char dotChar = '.';
+        const char shipChar = '#';
+        const char wallChar = '|';
+        const char emptyChar = ' ';
+        const char bulletChar = '^';
+
+        public Renderer(int width, int height)
+        {
+            screenWidth = width;
+            screenHeight = height;
+            builder = new StringBuilder();
+        }
+
+        public void BuildBoard()
+        {
             for (int bY = 0; bY < screenHeight; bY++)
             {
                 for (int bX = 0; bX < screenWidth; bX++)
                 {
                     if (bY == 0 || bY == screenHeight - 1)
-                    {
-                        builder.Append(dot);
-                    }
+                        builder.Append(dotChar);
+                    else if (bX == 0 || bX == screenWidth - 1)
+                        builder.Append(wallChar);
                     else
-                    {
-                        if (bX == 0 || bX == screenWidth - 1)
-                            builder.Append(line);
-                        else
-                            builder.Append(cell);
-                    }
+                        builder.Append(emptyChar);
                 }
-
-                //это нужно для того, чтобы перевести строку ниже (аналог клавиши Enter)
                 builder.Append('\n');
             }
+        }
 
-            //рисуем корабль на старте        
-            builder.Replace(cell, ship, CalculateCoords(shipX, shipY), 1);
-
-            //распечатка первого кадра
+        public void DrawFirstFrame(int shipX, int shipY)
+        {
+            builder[FindIndex(shipX, shipY)] = shipChar;
             Console.WriteLine(builder);
+        }
 
-            //игровой цикл
-            while (true)
-            {
-                //считываем нажатую клавишу
-                ConsoleKeyInfo info = Console.ReadKey();
+        public void Render(int oldShipX, int newShipX, int shipY, Bullet[] bullets)
+        {
+            builder[FindIndex(oldShipX, shipY)] = emptyChar;
+            builder[FindIndex(newShipX, shipY)] = shipChar;
 
-                //запоминаем старое положение корабля
-                int oldX = shipX;
-
-                if (info.Key == ConsoleKey.Escape)                
-                    break;    
-
-                //если клавиша влево, то уменьшаем Х (положение корабля)
-                if (info.Key == ConsoleKey.LeftArrow)
+            // foreach — это способ пройти по всем элементам массива, не используя индекс           
+            // Каждый элемент массива bullets по очереди попадает в переменную bullet. Это делает код чище и понятнее, если индекс не нужен            
+            foreach (var bullet in bullets)
+                if (bullet != null)
                 {
-                    shipX--;
-                    //ограничиваем, чтобы Х не был меньше 1 (не вышел за границы поля)
-                    shipX = Math.Max(1, shipX);
+                    ClearBullet(bullet);
+                    builder[FindIndex(bullet.X, bullet.Y)] = bulletChar;
                 }
-                //если клавиша вправо, то увеличиваем Х (положение корабля)
-                else if (info.Key == ConsoleKey.RightArrow)
-                {
-                    shipX++;
-                    //ограничиваем, чтобы Х не был больше ширины поля (не вышел за границы поля)
-                    shipX = Math.Min(screenWidth - 2, shipX);
-                }
-                
-                //если клавиша вверх, то стреляем
-                //проверяем, если bulletX == 0,
-                else if (info.Key == ConsoleKey.UpArrow) 
-                {
-                    
-                    //ищем первый пустой индекс, по которому нет пули   
-                    int emptyIndex = -1;                              
 
-                    for (int i = 0; i < bulletX.Length; i++)          
-                    {
-                        if (bulletX[i] == 0)                           
-                        {
-                            emptyIndex = i;                            
-                            break; // нашли первый — выходим
-                        }
-                    }
+            Console.SetCursorPosition(0, 0);
+            Console.WriteLine(builder);
+        }
 
-                    
-                    //место для новой пули есть, рождаем новую пулю     
-                    if (emptyIndex != -1)                              
-                    {
-                        bulletX[emptyIndex] = shipX;                       
-                        bulletY[emptyIndex] = shipY;                  
-                    }
-                }
-                //--      --
+        public void ClearBullet(Bullet bullet) => builder.Replace(bulletChar, emptyChar, FindIndex(bullet.X, bullet.OldY), 1);
 
-                //заменяем символы корабля                
-                builder.Replace(ship, cell, CalculateCoords(oldX, shipY), 1);
-                builder.Replace(cell, ship, CalculateCoords(shipX, shipY), 1);
+        int FindIndex(int valX, int valY)
+        {
+            int y = screenHeight - valY;
+            int width = screenWidth + 1;
+            return valX + y * width;
+        }
+    }
 
-                
-                //проходимся по всем пулям и увеличиваем им Y         
-                //затем рисуем все пули                               
-                for (int i = 0; i < bulletX.Length; i++)            
-                {
-                    //если пуля есть                                   
-                    if (bulletX[i] != 0)                              
-                    {
-                        //очищаем рисование старой пули, ориентируясь на старрые координаты 
-                        builder.Replace(bullet, cell, CalculateCoords(bulletX[i], bulletY[i]), 1);               
+    class Bullet
+    {
+        public int Y { get; set; }
+        public int X { get; }
+        public int OldY { get; set; }
 
-                        //увеличиваем позицию пули по высоте
-                        bulletY[i]++;                                                         
-
-                        //если поля достигла потолка, то удаляем ее    
-                        if (bulletY[i] > screenHeight - 1)             
-                        {
-                            bulletX[i] = 0;                           
-                            bulletY[i] = 0;                            
-
-                            //тут нужно выйти чтобы удаленная пуля не рисовалась (код чуть ниже)
-                            //без этого будет ошибка исполнения
-                            continue;                                  
-                        }
-
-                        //рисуем новую пулю, вычисления пули очень похожи на вычисления корабля, только с другими переменными 
-                        builder.Replace(cell, bullet, CalculateCoords(bulletX[i], bulletY[i]), 1);
-                    }
-                }                
-
-                //обновляем экран (очищаем его)
-                Console.Clear();
-                //и рисуем новый экран
-                Console.WriteLine(builder);
-            }
-
-            int CalculateCoords(int valX, int valY)
-            {
-                int y = screenHeight - valY; //отступ сверху до игрового объекта
-                int width = screenWidth + 1; //ширины экрана + 1 ( +1 - это прибавка , так как в конце каждой строки ..... есть еще символ \n, который тоже занимает индекс)
-                return valX + y * width;    //находим индекс корабля: позиция корабля + высота * на ширину экрана
-            }  
+        public Bullet(int x, int y)
+        {
+            X = x;
+            Y = y;
         }
     }
 
