@@ -32,6 +32,15 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Lesson_1.cs" />
+    <Compile Include="Lesson_2.cs" />
+    <Compile Include="Lesson_3.cs" />
+    <Compile Include="Lesson_4.cs" />
+    <Compile Include="Lesson_5.cs" />
+    <Compile Include="Lesson_6.cs" />
+    <Compile Include="Lesson_7.cs" />
+    <Compile Include="Lesson_8.cs" />
+    <Compile Include="Lesson_9.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
