@@ -25,9 +25,6 @@
   - Комментарии в коде описывают только новые элементы текущего урока
 */
 
-
-using System;
-
 namespace Galaxy
 {
     class MainClass
@@ -37,7 +34,7 @@ namespace Galaxy
 
         public static void Main()
         {
-            Action[] lessons = new Action[]
+            System.Action[] lessons = new System.Action[]
             {
                 () => new Lesson_1.Game().Run(),
                 () => new Lesson_2.Game().Run(),
