@@ -176,7 +176,8 @@ namespace Lesson_8
                 if (enemy == null)
                     continue;
 
-                isGameOver = isGameOver || enemy.Move(shipX, shipY);
+                if (enemy.Move(shipX, shipY))  
+                    isGameOver = true;
 
                 if (isGameOver)
                 {
@@ -242,8 +243,10 @@ namespace Lesson_8
         {
             isGameOver = false;
             shipX = screenWidth / 2;
+            enemySpeed = startEnemySpeed; // сброс скорости врагов
             score = 0; // сброс счёта при рестарте
-            
+            enemyTicks = 0; // сброс при рестарте
+
             for (int i = 0; i < enemies.Length; i++)
             {
                 if (enemies[i] != null)
@@ -410,7 +413,7 @@ namespace Lesson_8
             OldY = Y;
             Y++;
 
-            if (aim != null && Y >= aim.Y)
+            if (aim != null && aim.X == X && Y >= aim.Y)
                 return BulletMoveResult.Hit;
 
             if (Y > screenHeight - 1)

@@ -1,11 +1,21 @@
 ﻿<Properties StartupConfiguration="{9D88D977-D07D-4C88-9BBB-E0FAA2D89360}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Lesson_8.cs">
     <Files>
-      <File FileName="Program.cs" Line="33" Column="30" />
-      <File FileName="Lesson_7.cs" />
-      <File FileName="Lesson_8.cs" />
-      <File FileName="Lesson_9.cs" />
+      <File FileName="Program.cs" Line="33" Column="29" />
+      <File FileName="Lesson_8.cs" Line="12" Column="2" />
+      <File FileName="Lesson_9.cs" Line="482" Column="10" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Galaxy" expanded="True">
+            <Node name="Galaxy" expanded="True">
+              <Node name="Lesson_8.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|anycpu" />

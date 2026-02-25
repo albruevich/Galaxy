@@ -164,7 +164,8 @@ namespace Lesson_7
                 if (enemy == null)
                     continue;
 
-                isGameOver = isGameOver || enemy.Move(shipX, shipY); //GameOver может вызвать любой враг               
+                if (enemy.Move(shipX, shipY)) //GameOver может вызвать любой враг 
+                    isGameOver = true;               
 
                 if (isGameOver)
                 {
@@ -389,7 +390,7 @@ namespace Lesson_7
             OldY = Y;
             Y++;
 
-            if (aim != null && Y >= aim.Y) //проверка X вынесена наружу в Game
+            if (aim != null && aim.X == X && Y >= aim.Y) 
                 return BulletMoveResult.Hit;
 
             if (Y > screenHeight - 1)
