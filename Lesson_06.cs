@@ -1,14 +1,16 @@
 ﻿// ❗ Для переключения между уроками смотрите Program.cs
 
-// Урок 7
-// Теперь несколько врагов одновременно (массив enemies) с распределением по колонкам.
-// Непрерывная генерация новых врагов после уничтожения (enemySpawns).
+// Урок 6
+// Враг теперь движется сам со своей скоростью.
+// Появляется состояние Game Over и возможность перезапуска игры. 
 
 using System;
 using System.Text;
-using System.Collections.Generic;
 
-namespace Lesson_7
+// подключаем коллекции .NET, такие как List, Dictionary, Queue и другие, для хранения и управления объектами игры
+using System.Collections.Generic; 
+
+namespace Lesson_06
 {
     class Game
     {
@@ -17,34 +19,36 @@ namespace Lesson_7
         int shipX;
         const int shipY = 2;
         bool isGameRunning = true;
-        bool isGameOver = false;
-        const int enemyAmount = 5; // ограничение стартового количества врагов      
-        int enemySpawns = 0; //счетчик отложенного респавна врагов после уничтожения       
+
+        bool isGameOver = false; // флаг состояния поражения (игра остановлена, но программа не завершена)
 
         Renderer renderer;
 
         Bullet[] bullets = new Bullet[screenHeight - 2];
-        Enemy[] enemies = new Enemy[screenWidth - 2]; // теперь враги распределяются по колонкам экрана       
 
         Random rnd = new Random();
 
+        Enemy enemy = null;
+
+        // общий список всех игровых объектов для универсального рендеринга
+        // List автоматически расширяется и сжимается, поэтому с ним не нужно вручную пересоздавать массив и копировать данные.
         List<GameObject> renderedObjects = new List<GameObject>();
 
         public void Run()
         {
             Init();
             renderer.BuildBoard();
-            renderer.DrawFirstFrame(shipX, shipY, enemies); // метод теперь принимает массив врагов вместо одного          
+            renderer.DrawFirstFrame(shipX, shipY, enemy);
 
             while (isGameRunning)
             {
                 int oldX = shipX;
 
                 HandleInput();
-                TryRespawnEnemy(); // отдельный этап обработки отложенного спавна               
                 MovePlayerBullets();
-                MoveEnemies();
+                MoveEnemies(); // движение врагов вынесено в отдельный метод
 
+                // если игра окончена, то останавливаем рендеринг игровых объектов
                 if (isGameOver)
                     continue;
 
@@ -57,7 +61,7 @@ namespace Lesson_7
             shipX = screenWidth / 2;
             renderer = new Renderer(screenWidth, screenHeight);
 
-            CreateEnemies();
+            CreateEnemies(); // создание врагов вынесено в отдельный метод
         }
 
         void HandleInput()
@@ -70,6 +74,7 @@ namespace Lesson_7
                 return;
             }
 
+            // если игра окончена — разрешаем только рестарт
             if (isGameOver)
             {
                 if (info.Key == ConsoleKey.Spacebar)
@@ -98,13 +103,14 @@ namespace Lesson_7
                     Bullet bullet = new Bullet(shipX, shipY);
                     bullets[emptyIndex] = bullet;
 
-                    renderedObjects.Add(bullet);
+                    renderedObjects.Add(bullet); //добавляем объект в список
                 }
             }
         }
 
         void MovePlayerBullets()
         {
+            // при Game Over пули больше не двигаются
             if (isGameOver)
                 return;
 
@@ -115,137 +121,78 @@ namespace Lesson_7
                 if (bullet == null)
                     continue;
 
-                Enemy sameColumnEnemy = null; //поиск врага в той же колонке, что и пуля              
-                int enemyIndex = -1; // индекс врага для удаления из массива              
-
-                for (int e = 0; e < enemies.Length; e++)
-                {
-                    var enemy = enemies[e];
-
-                    if (enemy != null && enemy.X == bullet.X)
-                    {
-                        sameColumnEnemy = enemy;
-                        enemyIndex = e;
-                        break;
-                    }
-                }
-
-                BulletMoveResult result = bullet.Move(screenHeight, sameColumnEnemy); //пуля проверяет попадание в конкретного врага
+                BulletMoveResult result = bullet.Move(screenHeight, enemy);
 
                 if (result == BulletMoveResult.OutOfBounds || result == BulletMoveResult.Hit)
                 {
                     renderer.ClearGameObject(bullet);
                     bullets[i] = null;
 
-                    renderedObjects.Remove(bullet);
+                    renderedObjects.Remove(bullet); // удаляем объект из списка
 
-                    if (result == BulletMoveResult.Hit && sameColumnEnemy != null)
+                    if (result == BulletMoveResult.Hit)
                     {
-                        sameColumnEnemy.OldY = sameColumnEnemy.Y;
-                        renderer.ClearGameObject(sameColumnEnemy);
+                        // корректная очистка врага с учётом OldY
+                        enemy.OldY = enemy.Y;
+                        renderer.ClearGameObject(enemy);
 
-                        renderedObjects.Remove(sameColumnEnemy);
-                        enemies[enemyIndex] = null; //удаление врага из массива                        
-
-                        enemySpawns++; //увеличиваем счетчик респавна
-
+                        renderedObjects.Remove(enemy); //удаляем объект из списка
+                        enemy = null;
                     }
                 }
             }
         }
 
+        // движение врагов вынесено в отдельный метод
         void MoveEnemies()
         {
+            // при Game Over враги больше не двигаются
             if (isGameOver)
                 return;
 
-            foreach (var enemy in enemies) //перебор массива врагов
+            if (enemy != null)
             {
-                if (enemy == null)
-                    continue;
+                // метод Move врага теперь возвращает true при поражении
+                isGameOver = enemy.Move(shipX, shipY);
 
-                if (enemy.Move(shipX, shipY)) //GameOver может вызвать любой враг 
-                    isGameOver = true;               
-
+                //если конец игры, то отображаем это на экране
                 if (isGameOver)
-                {
                     renderer.PrintGameOver();
-                    break; //если isGameOver то прерываем цикл
-                }
             }
         }
 
+        // создание врагов вынесено в отдельный метод (подготовка к массиву врагов)
         void CreateEnemies()
         {
-            // цикл начального создания нескольких врагов
-            for (int i = 0; i < enemyAmount; i++)
-                CreateEnemy();
-        }
-
-        void TryRespawnEnemy() //механизм отложенного респавна
-        {
-            if (isGameOver)
-                return;
-
-            if (enemySpawns > 0)
-            {
-                enemySpawns--;
-                CreateEnemy();
-            }
-        }
-
-        void CreateEnemy()
-        {
-            // 1. Создаем список свободных колонок
-            // В массиве enemies каждый индекс соответствует одной колонке на игровом поле.
-            // Если enemies[i] == null, значит в этой колонке нет врага, и туда можно поставить нового.
-            List<int> freePositions = new List<int>();
-
-            for (int i = 0; i < enemies.Length; i++)
-            {
-                if (enemies[i] == null)
-                    freePositions.Add(i);  // добавляем индекс пустой колонки в список свободных
-            }
-
-            // 2. Проверка, есть ли свободные позиции
-            if (freePositions.Count == 0)
-                return; // если нет свободных колонок, не создаем врага, чтобы не перекрывать существующих
-
-            // 3. Выбираем случайную свободную колонку
-            int posIndex = freePositions[rnd.Next(freePositions.Count)];
-
-            // 4. Создаем нового врага           
-            Enemy enemy = new Enemy(posIndex + 1, screenHeight - 1);
-
-            // 5. Сохраняем врага в массиве и списке рендеринга
-            enemies[posIndex] = enemy;
+            int enemyX = rnd.Next(1, screenWidth - 1);
+            int enemyY = screenHeight - 1;
+            enemy = new Enemy(enemyX, enemyY);
             renderedObjects.Add(enemy);
         }
 
+        // полный рестарт игры без перезапуска программы
         void Restart()
         {
             isGameOver = false;
             shipX = screenWidth / 2;
 
-            for (int i = 0; i < enemies.Length; i++)
-            {
-                // в прошлом уроке удалялся только один враг,
-                // теперь проходим по массиву всех врагов и удаляем их из списка рендеринга
-                if (enemies[i] != null)
-                    renderedObjects.Remove(enemies[i]);
+            //удаляем объект из списка рендеринга
+            if (enemy != null)
+                renderedObjects.Remove(enemy);
 
-                enemies[i] = null; // обнуляем каждый элемент массива, чтобы старые ссылки на врагов не оставались
-            }
+            enemy = null; //обнуляем врага
 
             for (int i = 0; i < bullets.Length; i++)
             {
+                //удаляем объект из списка рендеринга
                 if (bullets[i] != null)
                     renderedObjects.Remove(bullets[i]);
 
+                // обнуляем каждый элемент массива, чтобы старые ссылки на пули не оставались
                 bullets[i] = null;
             }
 
-            renderer.ClearBoard();
+            renderer.ClearBoard(); // очистка экрана от всех объектов кроме рамки: снен, пола и потолка
 
             CreateEnemies();
         }
@@ -287,21 +234,17 @@ namespace Lesson_7
             }
         }
 
-        public void DrawFirstFrame(int shipX, int shipY, Enemy[] enemies)
+        public void DrawFirstFrame(int shipX, int shipY, Enemy enemy)
         {
             builder[FindIndex(shipX, shipY)] = shipChar;
 
-            foreach (var enemy in enemies)
-            {
-                if (enemy == null)
-                    continue;
-
+            if (enemy != null)
                 builder[FindIndex(enemy.X, enemy.Y)] = enemy.Symbol;
-            }
 
             Console.WriteLine(builder);
         }
 
+        // Renderer теперь работает с универсальным списком GameObject
         public void Render(int oldShipX, int newShipX, int shipY, List<GameObject> gameObjects)
         {
             builder[FindIndex(oldShipX, shipY)] = emptyChar;
@@ -321,6 +264,7 @@ namespace Lesson_7
         public void ClearGameObject(GameObject go) =>
             builder.Replace(go.Symbol, emptyChar, FindIndex(go.X, go.OldY), 1);
 
+        // вывод экрана поражения
         public void PrintGameOver()
         {
             ClearBoard();
@@ -331,6 +275,7 @@ namespace Lesson_7
             DrawText(text2, screenWidth / 2 - text2.Length / 2, screenHeight / 2 - 1);
         }
 
+        // очистка игрового поля без разрушения стен
         public void ClearBoard()
         {
             for (int i = 0; i < builder.Length; i++)
@@ -341,6 +286,7 @@ namespace Lesson_7
             }
         }
 
+        // универсальный вывод текста на экран
         public void DrawText(string text, int x, int y)
         {
             if (x < 0 || x + text.Length > screenWidth || y < 0 || y >= screenHeight)
@@ -390,7 +336,7 @@ namespace Lesson_7
             OldY = Y;
             Y++;
 
-            if (aim != null && aim.X == X && Y >= aim.Y) 
+            if (aim != null && X == aim.X && Y >= aim.Y)
                 return BulletMoveResult.Hit;
 
             if (Y > screenHeight - 1)
@@ -404,15 +350,21 @@ namespace Lesson_7
     {
         public override char Symbol => '@';
 
+        // скорость врага меньше 1 клетки за кадр
         const float enemySpeed = .12f;
 
+        // slowY — позиция врага с плавающей точкой для плавного движения (мньше 1 клетки за кадр).
         float slowY;
 
         public Enemy(int x, int y) : base(x, y)
         {
+            // Начинаем slowY немного выше целой позиции Y,
+            // чтобы первое смещение произошло не сразу на целую клетку,
+            // а постепенно — это делает движение врага визуально плавным.
             slowY = y + enemySpeed;
         }
 
+        // метод движения врага теперь возвращает true при поражении игрока
         public bool Move(int shipX, int shipY)
         {
             OldY = Y;
@@ -420,6 +372,8 @@ namespace Lesson_7
 
             Y = (int)slowY;
 
+            // проверка на поражение, не достиг ли враг пола
+            // а также нет ли коллиции с кораблем игрока
             if (slowY < 2 || (shipX == X && Y == shipY))
                 return true;
 

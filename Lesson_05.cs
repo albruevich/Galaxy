@@ -8,7 +8,7 @@
 using System;
 using System.Text;
 
-namespace Lesson_5
+namespace Lesson_05
 {
     class Game
     {

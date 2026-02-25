@@ -9,7 +9,7 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 
-namespace Lesson_9
+namespace Lesson_09
 {
     class Game
     {

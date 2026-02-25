@@ -36,15 +36,15 @@ namespace Galaxy
         {
             System.Action[] lessons = new System.Action[]
             {
-                () => new Lesson_1.Game().Run(),
-                () => new Lesson_2.Game().Run(),
-                () => new Lesson_3.Game().Run(),
-                () => new Lesson_4.Game().Run(),
-                () => new Lesson_5.Game().Run(),
-                () => new Lesson_6.Game().Run(),
-                () => new Lesson_7.Game().Run(),
-                () => new Lesson_8.Game().Run(),
-                () => new Lesson_9.Game().Run(),
+                () => new Lesson_01.Game().Run(),
+                () => new Lesson_02.Game().Run(),
+                () => new Lesson_03.Game().Run(),
+                () => new Lesson_04.Game().Run(),
+                () => new Lesson_05.Game().Run(),
+                () => new Lesson_06.Game().Run(),
+                () => new Lesson_07.Game().Run(),
+                () => new Lesson_08.Game().Run(),
+                () => new Lesson_09.Game().Run(),
             };
            
             if (lesson >= 1 && lesson <= lessons.Length)

@@ -1,14 +1,14 @@
 ﻿// ❗ Для переключения между уроками смотрите Program.cs
 
-// Урок 8
-// Постепенно растет уровень сложности: сперва медленно, но через определенное кол-во игровых циклов увеличиваем скорость врагов.
-// Добавляем и показываем счет
+// Урок 7
+// Теперь несколько врагов одновременно (массив enemies) с распределением по колонкам.
+// Непрерывная генерация новых врагов после уничтожения (enemySpawns).
 
 using System;
 using System.Text;
 using System.Collections.Generic;
 
-namespace Lesson_8
+namespace Lesson_07
 {
     class Game
     {
@@ -18,21 +18,13 @@ namespace Lesson_8
         const int shipY = 2;
         bool isGameRunning = true;
         bool isGameOver = false;
-        const int enemyAmount = 5;
-        int enemySpawns = 0;
-
-        int score = 0; // счёта игрока       
-
-        const float startEnemySpeed = .12f; // базовая стартовая скорость врагов        
-        const float enemyDeltaSpeed = .02f; // приращение скорости — механизм постепенного усложнения игры
-        const int ticksToAccelerateEnemies = 30; // порог количества игровых циклов до ускорения врагов      
-        float enemySpeed; // текущая скорость врагов теперь хранится в переменной, а не в константе внутри Enemy (как было в уроке 7)
-        int enemyTicks = 0; // счётчик игровых циклов для контроля момента ускорения.       
+        const int enemyAmount = 5; // ограничение стартового количества врагов      
+        int enemySpawns = 0; //счетчик отложенного респавна врагов после уничтожения       
 
         Renderer renderer;
 
         Bullet[] bullets = new Bullet[screenHeight - 2];
-        Enemy[] enemies = new Enemy[screenWidth - 2];
+        Enemy[] enemies = new Enemy[screenWidth - 2]; // теперь враги распределяются по колонкам экрана       
 
         Random rnd = new Random();
 
@@ -42,18 +34,16 @@ namespace Lesson_8
         {
             Init();
             renderer.BuildBoard();
-            renderer.DrawFirstFrame(shipX, shipY, enemies);
-            renderer.UpdateScore(score); // первичный вывод счёта при запуске игры      
+            renderer.DrawFirstFrame(shipX, shipY, enemies); // метод теперь принимает массив врагов вместо одного          
 
             while (isGameRunning)
             {
                 int oldX = shipX;
 
                 HandleInput();
-                TryRespawnEnemy();
+                TryRespawnEnemy(); // отдельный этап обработки отложенного спавна               
                 MovePlayerBullets();
                 MoveEnemies();
-                TryAccelerateEnemies(); // добавлен этап логики ускорения врагов               
 
                 if (isGameOver)
                     continue;
@@ -66,7 +56,6 @@ namespace Lesson_8
         {
             shipX = screenWidth / 2;
             renderer = new Renderer(screenWidth, screenHeight);
-            enemySpeed = startEnemySpeed; // инициализация текущей скорости врагов           
 
             CreateEnemies();
         }
@@ -126,8 +115,8 @@ namespace Lesson_8
                 if (bullet == null)
                     continue;
 
-                Enemy sameColumnEnemy = null;
-                int enemyIndex = -1;
+                Enemy sameColumnEnemy = null; //поиск врага в той же колонке, что и пуля              
+                int enemyIndex = -1; // индекс врага для удаления из массива              
 
                 for (int e = 0; e < enemies.Length; e++)
                 {
@@ -141,7 +130,7 @@ namespace Lesson_8
                     }
                 }
 
-                BulletMoveResult result = bullet.Move(screenHeight, sameColumnEnemy);
+                BulletMoveResult result = bullet.Move(screenHeight, sameColumnEnemy); //пуля проверяет попадание в конкретного врага
 
                 if (result == BulletMoveResult.OutOfBounds || result == BulletMoveResult.Hit)
                 {
@@ -156,11 +145,10 @@ namespace Lesson_8
                         renderer.ClearGameObject(sameColumnEnemy);
 
                         renderedObjects.Remove(sameColumnEnemy);
-                        enemies[enemyIndex] = null;
+                        enemies[enemyIndex] = null; //удаление врага из массива                        
 
-                        enemySpawns++;
+                        enemySpawns++; //увеличиваем счетчик респавна
 
-                        renderer.UpdateScore(++score); // увеличение счёта при уничтожении врага, и немедленное обновление отображения                       
                     }
                 }
             }
@@ -171,44 +159,30 @@ namespace Lesson_8
             if (isGameOver)
                 return;
 
-            foreach (var enemy in enemies)
+            foreach (var enemy in enemies) //перебор массива врагов
             {
                 if (enemy == null)
                     continue;
 
-                if (enemy.Move(shipX, shipY))  
-                    isGameOver = true;
+                if (enemy.Move(shipX, shipY)) //GameOver может вызвать любой враг 
+                    isGameOver = true;               
 
                 if (isGameOver)
                 {
                     renderer.PrintGameOver();
-                    break;
+                    break; //если isGameOver то прерываем цикл
                 }
-            }
-        }
-
-        // постепенное увеличение сложности игры
-        void TryAccelerateEnemies()
-        {            
-            if (isGameOver) // не ускоряем после окончания игры
-                return;
-           
-            enemyTicks++;  // увеличиваем игровые тики
-           
-            if (enemyTicks > ticksToAccelerateEnemies)  // проверяем, прошло ли достаточно времени
-            {                
-                enemyTicks = 0; // сбрасываем счётчик тиков                
-                enemySpeed += enemyDeltaSpeed; // увеличиваем скорость врагов
             }
         }
 
         void CreateEnemies()
         {
+            // цикл начального создания нескольких врагов
             for (int i = 0; i < enemyAmount; i++)
                 CreateEnemy();
         }
 
-        void TryRespawnEnemy()
+        void TryRespawnEnemy() //механизм отложенного респавна
         {
             if (isGameOver)
                 return;
@@ -222,19 +196,28 @@ namespace Lesson_8
 
         void CreateEnemy()
         {
+            // 1. Создаем список свободных колонок
+            // В массиве enemies каждый индекс соответствует одной колонке на игровом поле.
+            // Если enemies[i] == null, значит в этой колонке нет врага, и туда можно поставить нового.
             List<int> freePositions = new List<int>();
 
             for (int i = 0; i < enemies.Length; i++)
+            {
                 if (enemies[i] == null)
-                    freePositions.Add(i);
+                    freePositions.Add(i);  // добавляем индекс пустой колонки в список свободных
+            }
 
+            // 2. Проверка, есть ли свободные позиции
             if (freePositions.Count == 0)
-                return;
+                return; // если нет свободных колонок, не создаем врага, чтобы не перекрывать существующих
 
+            // 3. Выбираем случайную свободную колонку
             int posIndex = freePositions[rnd.Next(freePositions.Count)];
 
-            Enemy enemy = new Enemy(posIndex + 1, screenHeight - 1, enemySpeed); // враг теперь создаётся с параметром скорости           
+            // 4. Создаем нового врага           
+            Enemy enemy = new Enemy(posIndex + 1, screenHeight - 1);
 
+            // 5. Сохраняем врага в массиве и списке рендеринга
             enemies[posIndex] = enemy;
             renderedObjects.Add(enemy);
         }
@@ -243,16 +226,15 @@ namespace Lesson_8
         {
             isGameOver = false;
             shipX = screenWidth / 2;
-            enemySpeed = startEnemySpeed; // сброс скорости врагов
-            score = 0; // сброс счёта при рестарте
-            enemyTicks = 0; // сброс при рестарте
 
             for (int i = 0; i < enemies.Length; i++)
             {
+                // в прошлом уроке удалялся только один враг,
+                // теперь проходим по массиву всех врагов и удаляем их из списка рендеринга
                 if (enemies[i] != null)
                     renderedObjects.Remove(enemies[i]);
 
-                enemies[i] = null;
+                enemies[i] = null; // обнуляем каждый элемент массива, чтобы старые ссылки на врагов не оставались
             }
 
             for (int i = 0; i < bullets.Length; i++)
@@ -263,8 +245,7 @@ namespace Lesson_8
                 bullets[i] = null;
             }
 
-            renderer.ClearBoard(true); // метод ClearBoard теперь умеет учитывать, нужно ли очищать строку счёта.            
-            renderer.UpdateScore(score); // обновление счёта после рестарта.           
+            renderer.ClearBoard();
 
             CreateEnemies();
         }
@@ -291,13 +272,13 @@ namespace Lesson_8
 
         public void BuildBoard()
         {
-            for (int bY = 0; bY <= screenHeight; bY++)
+            for (int bY = 0; bY < screenHeight; bY++)
             {
                 for (int bX = 0; bX < screenWidth; bX++)
                 {
                     if (bY == 0 || bY == screenHeight - 1)
                         builder.Append(dotChar);
-                    else if ((bX == 0 || bX == screenWidth - 1) && bY != screenHeight)
+                    else if (bX == 0 || bX == screenWidth - 1)
                         builder.Append(wallChar);
                     else
                         builder.Append(emptyChar);
@@ -342,7 +323,7 @@ namespace Lesson_8
 
         public void PrintGameOver()
         {
-            ClearBoard(false); // при GameOver счёт не очищается (передаётся false).          
+            ClearBoard();
 
             const string text = "GAME OVER";
             DrawText(text, screenWidth / 2 - text.Length / 2, screenHeight / 2 + 1);
@@ -350,11 +331,9 @@ namespace Lesson_8
             DrawText(text2, screenWidth / 2 - text2.Length / 2, screenHeight / 2 - 1);
         }
 
-        public void ClearBoard(bool clearScore)
+        public void ClearBoard()
         {
-            int deltaWidth = clearScore ? 0 : screenWidth + 1; // логика частичной очистки экрана, чтобы можно было сохранить строку счёта
-           
-            for (int i = 0; i < builder.Length - deltaWidth; i++)
+            for (int i = 0; i < builder.Length; i++)
             {
                 char c = builder[i];
                 if (c != wallChar && c != dotChar && c != '\n')
@@ -376,8 +355,6 @@ namespace Lesson_8
             Console.WriteLine(builder);
         }
 
-        public void UpdateScore(int score) => DrawText($"score: {score}", 0, 0); // выделенный метод для обновления строки счёта.
-       
         int FindIndex(int valX, int valY)
         {
             int y = screenHeight - valY;
@@ -413,7 +390,7 @@ namespace Lesson_8
             OldY = Y;
             Y++;
 
-            if (aim != null && aim.X == X && Y >= aim.Y)
+            if (aim != null && aim.X == X && Y >= aim.Y) 
                 return BulletMoveResult.Hit;
 
             if (Y > screenHeight - 1)
@@ -427,12 +404,12 @@ namespace Lesson_8
     {
         public override char Symbol => '@';
 
-        float enemySpeed; // скорость врага теперь не константа, а задаётся извне через конструктор.         
+        const float enemySpeed = .12f;
+
         float slowY;
 
-        public Enemy(int x, int y, float startSpeed) : base(x, y)
+        public Enemy(int x, int y) : base(x, y)
         {
-            enemySpeed = startSpeed; // получаем текущую скорость из Game.            
             slowY = y + enemySpeed;
         }
 
