@@ -30,7 +30,7 @@ namespace Galaxy
     class MainClass
     {
         // ❗ Set here the lesson number you want to run: 1 - 10
-        const int lesson = 10;
+        const int lesson = 1;
 
         public static void Main()
         {
