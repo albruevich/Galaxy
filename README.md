@@ -48,3 +48,9 @@ They also provide a **basic understanding of game development**, creating a foun
   - The project is primarily a learning tool; graphics are simple text-based symbols
   - The focus is on **understanding C# and game development concepts**, not creating a polished game
   - Each lesson introduces only the new features for that lesson, making it easier to follow and understand
+
+**Technical Configuration:**
+  - Select which lesson to run in Program.cs:
+	// ❗ Set here the lesson number you want to run: 1 - 10
+	const int lesson = 1;
+  - Change the number from 1 to 10 to launch the corresponding lesson.
