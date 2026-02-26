@@ -2,7 +2,7 @@
 
 Educational C# project that simulates a simple game with a player-controlled ship and incoming enemies.
 
-The project is structured as a sequence of lessons, each extending the previous one and gradually increasing in complexity.vide a **basic understanding of game development**, creating a foundation for later transitioning to Unity game development.
+The project is structured as a sequence of lessons, each extending the previous one and gradually increasing in complexity.
 
 ## Demo 
 
