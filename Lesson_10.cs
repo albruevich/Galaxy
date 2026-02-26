@@ -1,14 +1,15 @@
 ﻿// ❗ Для переключения между уроками смотрите Program.cs
 
 // Урок 10
-// Добавлен Рекорд, который сохраняется на компьютере
-// Таким образом учимся работать с файлами
 
 // Игровые объекты теперь в цвете
 
 // Рефакторинг рендерера:
 // Переделан метод Render. Удалено: ClearGameObject, FindIndex, DrawFirstFrame, OldY у объектов
 // StringBuilder теперь используется только для отрисовки стен
+
+// Добавлен Рекорд, который сохраняется на компьютере
+// Таким образом учимся работать с файлами
 
 using System;
 using System.Text;
@@ -167,9 +168,7 @@ namespace Lesson_10
                         renderedObjects.Remove(sameColumnEnemy);
                         enemies[enemyIndex] = null;
 
-                        enemySpawns++;
-
-                        renderer.UpdateScore(score);
+                        enemySpawns++;                     
                     }
                 }
             }
@@ -381,6 +380,7 @@ namespace Lesson_10
 
         public void PrintGameOver()
         {
+            // очистка экрана внутри стен
             for (int x = 1; x < screenWidth - 1; x++)            
                 for (int y = 1; y < screenHeight - 1; y++)
                 {
@@ -398,16 +398,11 @@ namespace Lesson_10
 
         public void DrawText(string text, int x, int y, ConsoleColor color = ConsoleColor.White)
         {
-            if (x < 0 || x + text.Length > screenWidth || y < 0 || y >= screenHeight)
-                return;          
-
             int consoleY = screenHeight - y;
             Console.SetCursorPosition(x, consoleY);
             Console.ForegroundColor = color;
             Console.Write(text);           
-        }    
-
-        public void UpdateScore(int score) => DrawText($"score: {score}", 0, 0);            
+        }                     
     }
 
     abstract class GameObject
