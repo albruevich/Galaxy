@@ -7,6 +7,14 @@ It also covers classes, object-oriented programming basics, code structure, obje
 These lessons are designed to help you **understand the principles of the C# language and object-oriented programming in practice**.  
 They also provide a **basic understanding of game development**, creating a foundation for later transitioning to Unity game development.
 
+## Demo 
+
+![Gameplay](docs/gameplay.gif)
+
+## Code Example
+
+![Game Loop](docs/code_example.png)
+
 **Controls:**
   - Left/Right arrows — move the ship
   - Up arrow — shoot
