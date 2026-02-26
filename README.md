@@ -1,6 +1,4 @@
-================================================
-                     Galaxy
-================================================
+# Galaxy
 
 Educational project in C# simulating a game with a ship and incoming enemies.  
 The goal is to learn C# through practice: game loops, input handling, arrays, methods, lists, enums.  
