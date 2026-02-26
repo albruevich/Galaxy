@@ -15,6 +15,12 @@ They also provide a **basic understanding of game development**, creating a foun
 
 ![Game Loop](docs/code_example.png)
 
+**Purpose:**
+  - Designed as an educational sequence, not for entertainment
+  - Helps beginners **gain practical experience in C#** while gradually learning more advanced programming concepts
+  - Bridges the gap between learning programming fundamentals and creating actual games
+  - Encourages experimenting with object-oriented design, game loops, and rendering logic
+
 **Controls:**
   - Left/Right arrows — move the ship
   - Up arrow — shoot
@@ -28,9 +34,7 @@ They also provide a **basic understanding of game development**, creating a foun
 
 **Lessons:**
   - 10 lessons in total. Each lesson gradually increases in difficulty and expands on the previous one
-  - To run a lesson, change: `const int lesson = N` in `Program.cs`
-  - Each lesson is in a separate file `Lesson_N.cs` inside the Galaxy folder
-  - Each file defines the class `Lesson_N.Game`, and the `Run()` method starts the lesson
+  - Each lesson defines a separate `Game` class with a `Run()` method
   - Comments in the code describe only the new elements introduced in the current lesson
   - Lessons progressively cover:
     - Basic console output and input
@@ -43,12 +47,6 @@ They also provide a **basic understanding of game development**, creating a foun
     - Handling multiple objects (player, enemies, bullets)
     - Enemy movement and shooting logic
     - High score management using file storage
-
-**Purpose:**
-  - Designed as an educational sequence, not for entertainment
-  - Helps beginners **gain practical experience in C#** while gradually learning more advanced programming concepts
-  - Bridges the gap between learning programming fundamentals and creating actual games
-  - Encourages experimenting with object-oriented design, game loops, and rendering logic
 
 **Notes:**
   - The project is primarily a learning tool; graphics are simple text-based symbols
