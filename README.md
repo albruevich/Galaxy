@@ -41,7 +41,7 @@ They also provide a **basic understanding of game development**, creating a foun
     - Game architecture and refactoring
     - Rendering techniques
     - Handling multiple objects (player, enemies, bullets)
-    - Enemy AI and shooting mechanics
+    - Enemy movement and shooting logic
     - High score management using file storage
 
 **Purpose:**
