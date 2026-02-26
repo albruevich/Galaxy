@@ -52,3 +52,4 @@ They also provide a **basic understanding of game development**, creating a foun
     - //❗ Set here the lesson number you want to run: 1 - 10
     -    const int lesson = 1;
   - Change the number from 1 to 10 to launch the corresponding lesson.
+  - To study the implementation of a specific lesson, open the corresponding Lesson_N.cs file located in the root project folder (Galaxy).
