@@ -1,19 +1,21 @@
 ﻿// ❗ Для переключения между уроками смотрите Program.cs
 
-// Урок 10
 
-// Игровые объекты теперь в цвете
+// Урок 10 — серьёзный шаг вперёд в архитектуре игры.
 
-// Рефакторинг рендерера:
-// Переделан метод Render. Удалено: ClearGameObject, FindIndex, DrawFirstFrame, OldY у объектов
-// StringBuilder теперь используется только для отрисовки стен
+// Игровые объекты теперь цветные.
 
-// Добавлен Рекорд, который сохраняется на компьютере
-// Таким образом учимся работать с файлами
+// Проведён рефакторинг рендерера:
+// Render упрощён, удалены ClearGameObject, FindIndex, DrawFirstFrame и OldY у игровых объектов.
+// StringBuilder теперь используется только для отрисовки стен и фона.
+
+// Добавлен рекорд (HiScore), который сохраняется на компьютере.
+// В этом уроке знакомимся с работой с файлами и делаем игру более завершённой.
 
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.IO; // подключено пространство имён для работы с файлами 
 
 namespace Lesson_10
 {
@@ -36,7 +38,9 @@ namespace Lesson_10
         const int shooterRateAmount = 10;  
         const int shooterIncreaseInterval = 30; 
         const int shooterMaxChance = 70;  
-        int shooterTicks = 0; 
+        int shooterTicks = 0;
+
+        int hiScore = 0; // хранение рекорда в игре
 
         Renderer renderer;
 
@@ -48,13 +52,18 @@ namespace Lesson_10
 
         Random rnd = new Random();
 
+        FileManager fileManager; // менеджер для работы с файлом рекорда
+
         List<GameObject> renderedObjects = new List<GameObject>();
 
         public void Run()
         {
             Init();
-            renderer.BuildBoard();         
-            renderer.Render(renderedObjects, score);                     
+            renderer.BuildBoard();
+            // Render теперь принимает score и hiScore
+            renderer.Render(renderedObjects, score, hiScore);
+            
+            // больше нет DrawFirstFrame и UpdateScore
 
             while (isGameRunning)
             {
@@ -69,16 +78,20 @@ namespace Lesson_10
                 if (isGameOver)
                     continue;
 
-                renderer.Render(renderedObjects, score);
+                // единая отрисовка кадра без oldX и Ship
+                renderer.Render(renderedObjects, score, hiScore);
             }
         }
 
         void Init()
         {
             ship = new Ship(screenWidth / 2, 2);
-            renderedObjects.Add(ship);
+            renderedObjects.Add(ship); // корабль теперь сразу добавляется в общий список объектов
             renderer = new Renderer(screenWidth, screenHeight);
             enemySpeed = startEnemySpeed;
+
+            fileManager = new FileManager(); // создаём менеджер файлов
+            hiScore = fileManager.LoadHiScore(); // загрузка рекорда при старте игры
 
             CreateEnemies();
         }
@@ -189,11 +202,8 @@ namespace Lesson_10
                     enemyBullets[i] = null;
 
                     if (result == BulletMoveResult.Hit)
-                        isGameOver = true;
-
-                    if (isGameOver)
                     {
-                        renderer.PrintGameOver();
+                        GameOver(); // теперь вызов метода вместо isGameOver = true; 
                         break;
                     }                    
                 }
@@ -211,7 +221,7 @@ namespace Lesson_10
                     continue;
 
                 if (enemy.Move(ship.X, ship.Y))
-                    isGameOver = true;
+                    GameOver(); // теперь вызов метода вместо isGameOver = true; 
 
                 Bullet bullet = enemy.TryShoot(enemyBullets); 
                 if (bullet != null)
@@ -220,11 +230,8 @@ namespace Lesson_10
                     renderedObjects.Add(bullet);
                 }
 
-                if (isGameOver)
-                {
-                    renderer.PrintGameOver();
-                    break;
-                }
+                if (isGameOver)               
+                    break;                
             }
         }
 
@@ -317,6 +324,21 @@ namespace Lesson_10
                 objects[i] = null;
             }
         }
+
+        // новый метод для Game Over 
+        void GameOver()
+        {
+            isGameOver = true;
+
+            if(score > hiScore)
+            {
+                hiScore = score;
+                renderer.PrintGameOver(newHiScore: hiScore); // возможность передать новый рекорд в рендерер
+                fileManager.SaveHiScore(hiScore); // сохранение рекорда в файл
+            }
+            else
+                renderer.PrintGameOver();
+        }
     }
 
     class Renderer
@@ -324,7 +346,9 @@ namespace Lesson_10
         int screenWidth;
         int screenHeight;
 
-        StringBuilder builder;
+        // билдер теперь только как фон: стены и пустоты
+        // он больше не рисует игровые объекты и тексты
+        StringBuilder backgroundBuilder;
 
         const char dotChar = '.';
         const char wallChar = '|';
@@ -334,7 +358,7 @@ namespace Lesson_10
         {
             screenWidth = width;
             screenHeight = height;
-            builder = new StringBuilder();
+            backgroundBuilder = new StringBuilder();
         }
 
         public void BuildBoard()
@@ -344,73 +368,108 @@ namespace Lesson_10
                 for (int bX = 0; bX < screenWidth; bX++)
                 {
                     if (bY == 0 || bY == screenHeight - 1)
-                        builder.Append(dotChar);
+                        backgroundBuilder.Append(dotChar);
                     else if ((bX == 0 || bX == screenWidth - 1) && bY != screenHeight)
-                        builder.Append(wallChar);
+                        backgroundBuilder.Append(wallChar);
                     else
-                        builder.Append(emptyChar);
+                        backgroundBuilder.Append(emptyChar);
                 }
-                builder.Append('\n');
+                backgroundBuilder.Append('\n');
             }
         }
 
-        public void Render(List<GameObject> gameObjects, int score)
+        public void Render(List<GameObject> gameObjects, int score, int hiScore)
         {
-            //рисуются стены и фон, таким образом очищается экран от всех игровых объектов
-            Console.SetCursorPosition(0, 0);            
-            Console.Write(builder);
+            //рисуются стены и фон, таким образом очищается экран от всех старых игровых объектов и текстов
+            Console.SetCursorPosition(0, 0);
+            Console.Write(backgroundBuilder);
 
-            // рисуются игровые объекты
-            foreach (var go in gameObjects)               
-                DrawColoredObject(go);
+            // builder больше не содержит объекты, только фон --
+            // больше нет FindIndex и ClearGameObject --
+
+            // объекты теперь рисуются напрямую в консоль
+            foreach (var go in gameObjects)
+                DrawColoredObject(go);            
 
             // рисуется счет
             DrawText($"score: {score}", 0, 0, ConsoleColor.DarkYellow);
-           
-            Console.ResetColor();  //сброс цвета
-            Console.SetCursorPosition(0, screenHeight + 2); // установка курсора вниз
+
+            // отображение рекорда в интерфейсе
+            if (hiScore > 0)
+            {
+                string hiStr = $"hi: {hiScore}";
+                DrawText(hiStr, screenWidth - hiStr.Length, 0, ConsoleColor.DarkYellow);               
+            }
+
+            Console.ResetColor();
+            Console.SetCursorPosition(0, screenHeight + 2);
         }
 
+        // Рисуем объект напрямую в консоль, минуя StringBuilder
         void DrawColoredObject(GameObject go)
         {
-            Console.SetCursorPosition(go.X, screenHeight - go.Y);
-            Console.ForegroundColor = go.Color;
-            Console.Write(go.Symbol);            
+            Console.SetCursorPosition(go.X, screenHeight - go.Y); // Позиционируем курсор вручную (инверсия Y)            
+            Console.ForegroundColor = go.Color; // Используем цвет, сохранённый в объекте          
+            Console.Write(go.Symbol); // Рисуем символ поверх уже выведенного экрана (фона)
         }
 
-        public void PrintGameOver()
+        public void PrintGameOver(int newHiScore = 0)
         {
-            // очистка экрана внутри стен
-            for (int x = 1; x < screenWidth - 1; x++)            
+            // очистка только внутренней области, не трогая рамку
+            for (int x = 1; x < screenWidth - 1; x++)
                 for (int y = 1; y < screenHeight - 1; y++)
                 {
                     Console.SetCursorPosition(x, y);
                     Console.Write(emptyChar);
-                }            
+                }
 
+            // смещение текста динамически меняется при новом рекорде
+            int deltaG = 1;
+            int deltaS = -1;
+
+            // если есть новый рекорд — выводим дополнительную строку
+            if (newHiScore > 0)
+            {
+                deltaG = 2;
+                deltaS = -2;
+                
+                string scoreText = $"NEW HI: {newHiScore}";
+                DrawText(scoreText, screenWidth / 2 - scoreText.Length / 2, screenHeight / 2, ConsoleColor.Green);
+            }
+        
             const string text = "GAME OVER";
-            DrawText(text, screenWidth / 2 - text.Length / 2, screenHeight / 2 + 1, ConsoleColor.DarkYellow);
-            const string text2 = "SPACE TO PLAY";
-            DrawText(text2, screenWidth / 2 - text2.Length / 2, screenHeight / 2 - 1);
+            DrawText(text, screenWidth / 2 - text.Length / 2, screenHeight / 2 + deltaG, ConsoleColor.DarkYellow);
 
-            Console.SetCursorPosition(0, screenHeight + 2);
-        }       
+            const string text2 = "SPACE TO PLAY";
+            DrawText(text2, screenWidth / 2 - text2.Length / 2, screenHeight / 2 + deltaS);
+            
+            Console.SetCursorPosition(0, screenHeight + 2); // Возврат курсора вниз после отрисовки
+        }
 
         public void DrawText(string text, int x, int y, ConsoleColor color = ConsoleColor.White)
         {
+            // текст больше не записывается в StringBuilder
+            // теперь текст можно рисовать в любом цвете
+
             int consoleY = screenHeight - y;
             Console.SetCursorPosition(x, consoleY);
             Console.ForegroundColor = color;
-            Console.Write(text);           
-        }                     
+            Console.Write(text);            
+        }
     }
 
     abstract class GameObject
     {
         public int Y { get; set; }
-        public int X { get; set; }       
+        public int X { get; set; }
+
+        // нет больше oldY так как при рендерере сперва затирается весь экран
+        // через builder (рисуются тольк стены и пустоты)
+        // а затем отрисовывается каждый цветной символ
 
         public abstract char Symbol { get; }
+
+        // добавлено свойство Color для поддержки цветных объектов
         public virtual ConsoleColor Color => ConsoleColor.White;
 
         public GameObject(int x, int y)
@@ -424,6 +483,7 @@ namespace Lesson_10
     {
         public override char Symbol => direction > 0 ? '^' : '*';
 
+        // разные цвета для пуль игрока и врага
         public override ConsoleColor Color => direction > 0 ? ConsoleColor.Cyan : ConsoleColor.Red;
 
         int direction; 
@@ -449,8 +509,9 @@ namespace Lesson_10
 
     class Enemy : GameObject
     {
-        public override char Symbol => isShooter ? '&' : '@'; 
+        public override char Symbol => isShooter ? '&' : '@';
 
+        // стрелки теперь визуально отличаются цветом
         public override ConsoleColor Color => isShooter ? ConsoleColor.Red : ConsoleColor.Yellow;
 
         public int Cost => isShooter ? 2 : 1;
@@ -501,9 +562,66 @@ namespace Lesson_10
     class Ship : GameObject
     {
         public override char Symbol => '#';
+
+        // корабль теперь цветной 
         public override ConsoleColor Color => ConsoleColor.Cyan;
 
         public Ship(int x, int y) : base(x, y) { }
+    }
+
+    // новый класс для работы с файлом рекорда
+    class FileManager
+    {
+        // путь к файлу рекорда
+        // использование системной папки ApplicationData
+        static readonly string HiScorePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "Galaxy", "hiscore.txt");
+
+        // загрузка рекорда
+        public int LoadHiScore()
+        {
+            int hiScore = 0;
+
+            try // Попытка прочитать файл с рекордом
+            {
+                // Проверяем, существует ли файл
+                if (File.Exists(HiScorePath))
+                {
+                    // Если файл есть, пробуем прочитать число
+                    if (int.TryParse(File.ReadAllText(HiScorePath), out int value))
+                        hiScore = value;
+                }
+                // Если файла нет — это нормально, просто начинаем с рекордом 0
+            }
+            catch (Exception ex) // Ловим реальные ошибки чтения, не связанные с отсутствием файла
+            {                              
+                Console.WriteLine($"Error: {ex.Message}");               
+            }
+
+            return hiScore;
+        }
+
+        // Метод для сохранения рекорда игрока в файл
+        public void SaveHiScore(int hiScore)
+        {
+            try // Начинаем блок try — здесь мы "пытаемся" выполнить код, который может вызвать ошибку
+            {
+                // Получаем путь к папке, где будет храниться файл рекорда
+                string dir = Path.GetDirectoryName(HiScorePath);
+
+                // Проверяем, существует ли эта папка. Если нет — создаём её                
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                // Записываем рекорд в файл в виде текста. Если файла нет — он будет создан автоматически                
+                File.WriteAllText(HiScorePath, hiScore.ToString());
+            }
+            catch (Exception ex) // Блок catch "ловит" любые ошибки, возникшие в try
+            {
+                // Если что-то пошло не так (например, нет прав на запись), выводим сообщение об ошибке                               
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
     }
 
     enum BulletMoveResult
