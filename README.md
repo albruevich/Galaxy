@@ -1,11 +1,8 @@
 # Galaxy
 
-Educational project in C# simulating a game with a ship and incoming enemies.  
-The goal is to learn C# through practice: game loops, input handling, arrays, methods, lists, enums.  
-It also covers classes, object-oriented programming basics, code structure, object organization, and more.  
+Educational C# project that simulates a simple game with a player-controlled ship and incoming enemies.
 
-These lessons are designed to help you **understand the principles of the C# language and object-oriented programming in practice**.  
-They also provide a **basic understanding of game development**, creating a foundation for later transitioning to Unity game development.
+The project is structured as a sequence of lessons, each extending the previous one and gradually increasing in complexity.vide a **basic understanding of game development**, creating a foundation for later transitioning to Unity game development.
 
 ## Demo 
 
