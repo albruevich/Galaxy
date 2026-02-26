@@ -51,7 +51,7 @@ namespace Galaxy
             if (lesson >= 1 && lesson <= lessons.Length)
                 lessons[lesson - 1]();
             else
-                lessons[9]();
+                lessons[lessons.Length - 1]();
         }
     }
 }
