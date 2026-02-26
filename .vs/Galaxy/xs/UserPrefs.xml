@@ -1,16 +1,15 @@
 ﻿<Properties StartupConfiguration="{9D88D977-D07D-4C88-9BBB-E0FAA2D89360}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Lesson_09.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Lesson_10.cs">
     <Files>
-      <File FileName="Program.cs" Line="28" Column="17" />
-      <File FileName="Lesson_10.cs" Line="67" Column="35" />
-      <File FileName="Lesson_09.cs" Line="12" Column="1" />
+      <File FileName="Program.cs" Line="35" Column="34" />
+      <File FileName="Lesson_10.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Galaxy" expanded="True">
             <Node name="Galaxy" expanded="True">
-              <Node name="Lesson_09.cs" selected="True" />
+              <Node name="Lesson_10.cs" selected="True" />
             </Node>
           </Node>
         </State>
