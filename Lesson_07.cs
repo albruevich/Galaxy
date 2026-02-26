@@ -1,8 +1,8 @@
-﻿// ❗ Для переключения между уроками смотрите Program.cs
+﻿// ❗ For switching between lessons, see Program.cs
 
-// Урок 7
-// Теперь несколько врагов одновременно (массив enemies) с распределением по колонкам.
-// Непрерывная генерация новых врагов после уничтожения (enemySpawns).
+// Lesson 7
+// Now multiple enemies at once (enemies array) with distribution across columns.
+// Continuous generation of new enemies after destruction (enemySpawns).
 
 using System;
 using System.Text;
@@ -18,13 +18,13 @@ namespace Lesson_07
         const int shipY = 2;
         bool isGameRunning = true;
         bool isGameOver = false;
-        const int enemyAmount = 5; // ограничение стартового количества врагов      
-        int enemySpawns = 0; //счетчик отложенного респавна врагов после уничтожения       
+        const int enemyAmount = 5; // limit for initial enemy count      
+        int enemySpawns = 0; // counter for delayed respawn of enemies after destruction       
 
         Renderer renderer;
 
         Bullet[] bullets = new Bullet[screenHeight - 2];
-        Enemy[] enemies = new Enemy[screenWidth - 2]; // теперь враги распределяются по колонкам экрана       
+        Enemy[] enemies = new Enemy[screenWidth - 2]; // enemies now distributed across screen columns       
 
         Random rnd = new Random();
 
@@ -34,14 +34,14 @@ namespace Lesson_07
         {
             Init();
             renderer.BuildBoard();
-            renderer.DrawFirstFrame(shipX, shipY, enemies); // метод теперь принимает массив врагов вместо одного          
+            renderer.DrawFirstFrame(shipX, shipY, enemies); // method now takes an array of enemies instead of one          
 
             while (isGameRunning)
             {
                 int oldX = shipX;
 
                 HandleInput();
-                TryRespawnEnemy(); // отдельный этап обработки отложенного спавна               
+                TryRespawnEnemy(); // separate stage for handling delayed spawn               
                 MovePlayerBullets();
                 MoveEnemies();
 
@@ -115,8 +115,8 @@ namespace Lesson_07
                 if (bullet == null)
                     continue;
 
-                Enemy sameColumnEnemy = null; //поиск врага в той же колонке, что и пуля              
-                int enemyIndex = -1; // индекс врага для удаления из массива              
+                Enemy sameColumnEnemy = null; // search for enemy in the same column as the bullet              
+                int enemyIndex = -1; // index of enemy for removal from array              
 
                 for (int e = 0; e < enemies.Length; e++)
                 {
@@ -130,7 +130,7 @@ namespace Lesson_07
                     }
                 }
 
-                BulletMoveResult result = bullet.Move(screenHeight, sameColumnEnemy); //пуля проверяет попадание в конкретного врага
+                BulletMoveResult result = bullet.Move(screenHeight, sameColumnEnemy); // bullet checks collision with specific enemy
 
                 if (result == BulletMoveResult.OutOfBounds || result == BulletMoveResult.Hit)
                 {
@@ -145,9 +145,9 @@ namespace Lesson_07
                         renderer.ClearGameObject(sameColumnEnemy);
 
                         renderedObjects.Remove(sameColumnEnemy);
-                        enemies[enemyIndex] = null; //удаление врага из массива                        
+                        enemies[enemyIndex] = null; // remove enemy from array                        
 
-                        enemySpawns++; //увеличиваем счетчик респавна
+                        enemySpawns++; // increase respawn counter
 
                     }
                 }
@@ -159,30 +159,30 @@ namespace Lesson_07
             if (isGameOver)
                 return;
 
-            foreach (var enemy in enemies) //перебор массива врагов
+            foreach (var enemy in enemies) // iterate through enemy array
             {
                 if (enemy == null)
                     continue;
 
-                if (enemy.Move(shipX, shipY)) //GameOver может вызвать любой враг 
-                    isGameOver = true;               
+                if (enemy.Move(shipX, shipY)) // any enemy can trigger GameOver
+                    isGameOver = true;
 
                 if (isGameOver)
                 {
                     renderer.PrintGameOver();
-                    break; //если isGameOver то прерываем цикл
+                    break; // break loop if isGameOver
                 }
             }
         }
 
         void CreateEnemies()
         {
-            // цикл начального создания нескольких врагов
+            // loop for initial creation of multiple enemies
             for (int i = 0; i < enemyAmount; i++)
                 CreateEnemy();
         }
 
-        void TryRespawnEnemy() //механизм отложенного респавна
+        void TryRespawnEnemy() // delayed respawn mechanism
         {
             if (isGameOver)
                 return;
@@ -196,28 +196,28 @@ namespace Lesson_07
 
         void CreateEnemy()
         {
-            // 1. Создаем список свободных колонок
-            // В массиве enemies каждый индекс соответствует одной колонке на игровом поле.
-            // Если enemies[i] == null, значит в этой колонке нет врага, и туда можно поставить нового.
+            // 1. Create a list of free columns
+            // In the enemies array, each index corresponds to a column on the game field.
+            // If enemies[i] == null, there is no enemy in that column, so a new one can be placed there.
             List<int> freePositions = new List<int>();
 
             for (int i = 0; i < enemies.Length; i++)
             {
                 if (enemies[i] == null)
-                    freePositions.Add(i);  // добавляем индекс пустой колонки в список свободных
+                    freePositions.Add(i);  // add index of empty column to free list
             }
 
-            // 2. Проверка, есть ли свободные позиции
+            // 2. Check if there are free positions
             if (freePositions.Count == 0)
-                return; // если нет свободных колонок, не создаем врага, чтобы не перекрывать существующих
+                return; // if no free columns, don't create enemy to avoid overlapping
 
-            // 3. Выбираем случайную свободную колонку
+            // 3. Pick a random free column
             int posIndex = freePositions[rnd.Next(freePositions.Count)];
 
-            // 4. Создаем нового врага           
+            // 4. Create a new enemy           
             Enemy enemy = new Enemy(posIndex + 1, screenHeight - 1);
 
-            // 5. Сохраняем врага в массиве и списке рендеринга
+            // 5. Save enemy in array and rendering list
             enemies[posIndex] = enemy;
             renderedObjects.Add(enemy);
         }
@@ -229,12 +229,12 @@ namespace Lesson_07
 
             for (int i = 0; i < enemies.Length; i++)
             {
-                // в прошлом уроке удалялся только один враг,
-                // теперь проходим по массиву всех врагов и удаляем их из списка рендеринга
+                // in previous lesson only one enemy was removed,
+                // now iterate all enemies and remove them from rendering list
                 if (enemies[i] != null)
                     renderedObjects.Remove(enemies[i]);
 
-                enemies[i] = null; // обнуляем каждый элемент массива, чтобы старые ссылки на врагов не оставались
+                enemies[i] = null; // reset each array element to avoid old references
             }
 
             for (int i = 0; i < bullets.Length; i++)
@@ -390,7 +390,7 @@ namespace Lesson_07
             OldY = Y;
             Y++;
 
-            if (aim != null && aim.X == X && Y >= aim.Y) 
+            if (aim != null && aim.X == X && Y >= aim.Y)
                 return BulletMoveResult.Hit;
 
             if (Y > screenHeight - 1)

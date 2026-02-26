@@ -3,33 +3,33 @@
                      Galaxy
 ================================================
 
-Учебный проект на C#, имитирующий игру с кораблем и надвигающимися врагами.
-Цель — изучать C# через практику: игровые и обычные циклы, обработку ввода, массивы, методы, списки, перечисления.
-Также изучаются классы, основы ООП, структура кода и организация объектов, а также многое другое.
-Проект используется как последовательность уроков для освоения программирования, а не для развлечения.
+Educational project in C# simulating a game with a ship and incoming enemies.
+The goal is to learn C# through practice: game and regular loops, input handling, arrays, methods, lists, enums.
+Also covers classes, OOP basics, code structure and object organization, and much more.
+The project is used as a sequence of lessons to learn programming, not for entertainment.
 
-Управление:
-  - Стрелки влево/вправо — движение корабля
-  - Стрелка вверх — выстрел
-  - Esc — выход из проекта
+Controls:
+  - Left/Right arrows — move the ship
+  - Up arrow — shoot
+  - Esc — exit the project
 
-Игра:
-  - Кадр обновляется после каждого действия игрока
-  - Игра не идёт в реальном времени (пошаговая)
+Game:
+  - The frame updates after each player action
+  - The game is not in real-time (turn-based)
 
-Уроки:
-  - 10 уроков. Они идут по возрастанию сложности, каждый следующий расширяет предыдущий
-  - Для запуска урока изменить: const int lesson = N
-  - Каждый урок находится в отдельном файле Lesson_N.cs внутри папки Galaxy
-  - В файле определён класс Lesson_N.Game, и метод Run() запускает урок
-  - Комментарии в коде описывают только новые элементы текущего урока
+Lessons:
+  - 10 lessons. They increase in difficulty, each next expands on the previous one
+  - To run a lesson, change: const int lesson = N
+  - Each lesson is in a separate file Lesson_N.cs inside the Galaxy folder
+  - Each file defines the class Lesson_N.Game, and the Run() method starts the lesson
+  - Comments in the code describe only the new elements of the current lesson
 */
 
 namespace Galaxy
 {
     class MainClass
     {
-        // ❗ Установите здесь номер урока, который хотите запустить: 1 - 10
+        // ❗ Set here the lesson number you want to run: 1 - 10
         const int lesson = 10;
 
         public static void Main()
@@ -47,11 +47,11 @@ namespace Galaxy
                 () => new Lesson_09.Game().Run(),
                 () => new Lesson_10.Game().Run()
             };
-           
+
             if (lesson >= 1 && lesson <= lessons.Length)
                 lessons[lesson - 1]();
             else
-                lessons[0](); 
+                lessons[9]();
         }
     }
 }

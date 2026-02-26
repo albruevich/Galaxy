@@ -1,8 +1,8 @@
-﻿// ❗ Для переключения между уроками смотрите Program.cs
+﻿// ❗ For switching between lessons, see Program.cs
 
-// Урок 3
-// Учим корабль стрелять (пока только одной пулей за раз).
-// Создаем новый класс GameObject.
+// Lesson 3
+// Teaching the ship to shoot (currently only one bullet at a time).
+// Creating a new GameObject class.
 
 using System;
 using System.Text;
@@ -19,7 +19,7 @@ namespace Lesson_03
 
         Renderer renderer;
 
-        GameObject bullet; // новая переменная для пули игрока (пока только одна пуля одновременно)
+        GameObject bullet; // new variable for the player's bullet (currently only one bullet at a time)
 
         public void Run()
         {
@@ -32,9 +32,9 @@ namespace Lesson_03
                 int oldX = shipX;
 
                 HandleInput();
-                MovePlayerBullet(); // движение пули вверх
+                MovePlayerBullet(); // move the bullet upward
 
-                renderer.Render(oldX, shipX, shipY, bullet); // отрисовка корабля теперь вместе с пулей
+                renderer.Render(oldX, shipX, shipY, bullet); // draw the ship now together with the bullet
             }
         }
 
@@ -58,24 +58,24 @@ namespace Lesson_03
                 shipX = Math.Max(1, shipX - 1);
             else if (info.Key == ConsoleKey.RightArrow)
                 shipX = Math.Min(screenWidth - 2, shipX + 1);
-            else if (info.Key == ConsoleKey.UpArrow && bullet == null) //если нажата стрелка вверх
-                bullet = new GameObject(shipX, shipY); // создаём новую пулю на позиции корабля, если пули сейчас нет
+            else if (info.Key == ConsoleKey.UpArrow && bullet == null) // if the up arrow is pressed
+                bullet = new GameObject(shipX, shipY); // create a new bullet at the ship's position if there is no bullet currently
         }
 
         void MovePlayerBullet()
         {
-            if (bullet == null) //еслии пули нет, то выходим из метода
+            if (bullet == null) // if there is no bullet, exit the method
                 return;
 
-            bullet.OldY = bullet.Y; // запоминаем старую Y для правильной очистки символа
+            bullet.OldY = bullet.Y; // remember the old Y for correct clearing of the symbol
 
-            bullet.Y++; // двигаем пулю вверх. +1 работает "вверх" благодаря вычислению индекса в FindIndex
+            bullet.Y++; // move the bullet upward. +1 works "up" due to the index calculation in FindIndex
 
-            //проверка, не достигла ли пуля потолка
+            // check if the bullet reached the ceiling
             if (bullet.Y > screenHeight - 1)
             {
-                renderer.ClearBullet(bullet); // стираем пулю, чтобы не оставалось символа на экране
-                bullet = null; // пуля больше не существует, можно выстрелить новую
+                renderer.ClearBullet(bullet); // erase the bullet so no symbol remains on the screen
+                bullet = null; // the bullet no longer exists, a new one can be fired
             }
         }
     }
@@ -91,7 +91,7 @@ namespace Lesson_03
         const char shipChar = '#';
         const char wallChar = '|';
         const char emptyChar = ' ';
-        const char bulletChar = '^'; // символ пули
+        const char bulletChar = '^'; // bullet symbol
 
         public Renderer(int width, int height)
         {
@@ -130,17 +130,17 @@ namespace Lesson_03
 
             if (bullet != null)
             {
-                ClearBullet(bullet); // стираем старую позицию пули               
-                builder[FindIndex(bullet.X, bullet.Y)] = bulletChar; // рисуем пулю на новой позиции
+                ClearBullet(bullet); // erase the bullet's old position               
+                builder[FindIndex(bullet.X, bullet.Y)] = bulletChar; // draw the bullet at the new position
             }
 
             Console.SetCursorPosition(0, 0);
             Console.WriteLine(builder);
         }
 
-        // ❗ Почему Replace с индексом, а не builder[...]:
-        // Если пуля была на той же позиции, что корабль, builder[...] = emptyChar
-        // то затирается символ корабля (#). А Replace с индексом меняет только символ пули (^)
+        // ❗ Why Replace with index instead of builder[...]:
+        // If the bullet was in the same position as the ship, builder[...] = emptyChar
+        // it would erase the ship symbol (#). Replace with index changes only the bullet symbol (^)
         public void ClearBullet(GameObject bullet) => builder.Replace(bulletChar, emptyChar, FindIndex(bullet.X, bullet.OldY), 1);
 
         int FindIndex(int valX, int valY)
@@ -151,14 +151,14 @@ namespace Lesson_03
         }
     }
 
-    //Новый класс GameObject
+    // New class GameObject
     class GameObject
     {
-        public int Y { get; set; }   //  координата Y 
-        public int X { get; set; }   // координата X 
-        public int OldY { get; set; } // предыдущая Y для очистки символа      
+        public int Y { get; set; }   // Y coordinate
+        public int X { get; set; }   // X coordinate
+        public int OldY { get; set; } // previous Y for clearing the symbol      
 
-        // конструктор 
+        // constructor
         public GameObject(int x, int y)
         {
             X = x;

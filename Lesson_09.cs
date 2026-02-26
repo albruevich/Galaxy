@@ -1,10 +1,10 @@
-﻿// ❗ Для переключения между уроками смотрите Program.cs
+﻿// ❗ For switching between lessons, see Program.cs
 
-// Урок 9
-// Учим некоторых врагов стрелять, они будут отличаться по внешнему виду от нестреляющих.
-// Количество стрелков будет расти со временем (чем дольше игра, тем больше срелков, но не больше критического значения).
-// Вместо простых координат корабля теперь используется класс Ship.
-// За убийство стреляющих врагов начисляется больше награда.
+// Lesson 9
+// Teaching some enemies to shoot; they will differ visually from non-shooting enemies.
+// The number of shooters will grow over time (the longer the game, the more shooters, but not exceeding a critical value).
+// Instead of simple ship coordinates, a Ship class is now used.
+// Killing shooting enemies gives a higher reward.
 
 using System;
 using System.Text;
@@ -28,18 +28,18 @@ namespace Lesson_09
         float enemySpeed;
         int enemyTicks = 0;
 
-        const int shooterRateAmount = 10; //базовый шанс появления стрелка 
-        const int shooterIncreaseInterval = 30; //через 30 тиков шанс появляния стрелков увеличится 
-        const int shooterMaxChance = 70; //максимальный шанс появления стрелка 70% 
-        int shooterTicks = 0; //общий счётчик времени игры для роста стрелков 
+        const int shooterRateAmount = 10; // base chance for a shooter to appear
+        const int shooterIncreaseInterval = 30; // every 30 ticks the chance of shooters appearing increases
+        const int shooterMaxChance = 70; // maximum chance for a shooter to appear: 70%
+        int shooterTicks = 0; // global game tick counter for shooter growth
 
         Renderer renderer;
 
-        Ship ship; // вместо простых координат теперь объект Ship 
+        Ship ship; // instead of simple coordinates, now a Ship object
 
         Bullet[] bullets = new Bullet[screenHeight - 2];
         Enemy[] enemies = new Enemy[screenWidth - 2];
-        Bullet[] enemyBullets = new Bullet[screenWidth - 2]; // пули врагов 
+        Bullet[] enemyBullets = new Bullet[screenWidth - 2]; // enemy bullets
 
         Random rnd = new Random();
 
@@ -49,7 +49,7 @@ namespace Lesson_09
         {
             Init();
             renderer.BuildBoard();
-            renderer.DrawFirstFrame(ship, enemies); // теперь Ship передаётся
+            renderer.DrawFirstFrame(ship, enemies); // now Ship is passed
             renderer.UpdateScore(score);
 
             while (isGameRunning)
@@ -59,7 +59,7 @@ namespace Lesson_09
                 HandleInput();
                 TryRespawnEnemy();
                 MovePlayerBullets();
-                MoveEnemyBullets(); // добавлен метод движения пуль врагов 
+                MoveEnemyBullets(); // added enemy bullet movement
                 MoveEnemies();
                 TryAccelerateEnemies();
                 IncreaseShooterChance();
@@ -67,13 +67,13 @@ namespace Lesson_09
                 if (isGameOver)
                     continue;
 
-                renderer.Render(oldX, ship, renderedObjects); // теперь Ship передаётся
+                renderer.Render(oldX, ship, renderedObjects); // now Ship is passed
             }
         }
 
         void Init()
         {
-            ship = new Ship(screenWidth / 2, 2);  // создание корабля вместо координат
+            ship = new Ship(screenWidth / 2, 2);  // create Ship instead of coordinates
             renderer = new Renderer(screenWidth, screenHeight);
             enemySpeed = startEnemySpeed;
 
@@ -99,9 +99,9 @@ namespace Lesson_09
             }
 
             if (info.Key == ConsoleKey.LeftArrow)
-                ship.X = Math.Max(1, ship.X - 1); // теперь Ship вместо координат
+                ship.X = Math.Max(1, ship.X - 1); // now Ship instead of coordinates
             else if (info.Key == ConsoleKey.RightArrow)
-                ship.X = Math.Min(screenWidth - 2, ship.X + 1);// теперь Ship вместо координат
+                ship.X = Math.Min(screenWidth - 2, ship.X + 1); // now Ship instead of coordinates
             else if (info.Key == ConsoleKey.UpArrow)
             {
                 int emptyIndex = -1;
@@ -115,7 +115,7 @@ namespace Lesson_09
 
                 if (emptyIndex != -1)
                 {
-                    Bullet bullet = new Bullet(ship.X, ship.Y, direction: 1); // теперь Ship вместо координат
+                    Bullet bullet = new Bullet(ship.X, ship.Y, direction: 1); // now Ship instead of coordinates
                     bullets[emptyIndex] = bullet;
 
                     renderedObjects.Add(bullet);
@@ -161,8 +161,8 @@ namespace Lesson_09
 
                     if (result == BulletMoveResult.Hit && sameColumnEnemy != null)
                     {
-                        // Добавляем очки за уничтоженного врага
-                        // Стоимость врага определяется свойством Cost: стрелок даёт 2 очка, обычный враг — 1 очко
+                        // Add points for destroying an enemy
+                        // Enemy value is determined by Cost: shooter gives 2 points, normal enemy — 1 point
                         score += sameColumnEnemy.Cost;
 
                         sameColumnEnemy.OldY = sameColumnEnemy.Y;
@@ -179,10 +179,10 @@ namespace Lesson_09
             }
         }
 
-        // новый метод для пуль врагов 
-        void MoveEnemyBullets() 
+        // new method for enemy bullets
+        void MoveEnemyBullets()
         {
-            //пули врагов
+            // enemy bullets
             for (int i = enemyBullets.Length - 1; i >= 0; i--)
             {
                 if (enemyBullets[i] == null)
@@ -221,7 +221,7 @@ namespace Lesson_09
                 if (enemy.Move(ship.X, ship.Y))
                     isGameOver = true;
 
-                Bullet bullet = enemy.TryShoot(enemyBullets); // логика стрельбы врагов
+                Bullet bullet = enemy.TryShoot(enemyBullets); // enemy shooting logic
                 if (bullet != null)
                 {
                     enemyBullets[enemy.X - 1] = bullet;
@@ -247,13 +247,13 @@ namespace Lesson_09
             {
                 enemyTicks = 0;
 
-                const float maxEnemySpeed = 0.5f; 
-                enemySpeed = Math.Min(enemySpeed + enemyDeltaSpeed, maxEnemySpeed); // ограничиваем скорость
+                const float maxEnemySpeed = 0.5f;
+                enemySpeed = Math.Min(enemySpeed + enemyDeltaSpeed, maxEnemySpeed); // limit speed
             }
         }
 
-        // новый метод для роста вероятности стрелков 
-        void IncreaseShooterChance() 
+        // new method to increase shooter probability
+        void IncreaseShooterChance()
         {
             if (isGameOver)
                 return;
@@ -293,9 +293,9 @@ namespace Lesson_09
 
             int posIndex = freePositions[rnd.Next(freePositions.Count)];
 
-            //вероятность стрелка растёт со временем, но ограничена            
-            bool isShooter = rnd.Next(0, 100) < Math.Min(shooterRateAmount + shooterTicks / shooterIncreaseInterval, shooterMaxChance); 
-            Enemy enemy = new Enemy(posIndex + 1, screenHeight - 1, enemySpeed, isShooter); // передается флаг стрелка
+            // shooter probability grows over time but is limited            
+            bool isShooter = rnd.Next(0, 100) < Math.Min(shooterRateAmount + shooterTicks / shooterIncreaseInterval, shooterMaxChance);
+            Enemy enemy = new Enemy(posIndex + 1, screenHeight - 1, enemySpeed, isShooter); // pass shooter flag
 
             enemies[posIndex] = enemy;
             renderedObjects.Add(enemy);
@@ -308,12 +308,12 @@ namespace Lesson_09
             score = 0;
             enemySpeed = startEnemySpeed;
             enemyTicks = 0;
-            shooterTicks = 0; // сброс тика
+            shooterTicks = 0; // reset tick
 
-            // очистка объектов
+            // clear objects
             ClearObjects(enemies);
             ClearObjects(bullets);
-            ClearObjects(enemyBullets);        
+            ClearObjects(enemyBullets);
 
             renderer.ClearBoard(true);
             renderer.UpdateScore(score);
@@ -321,8 +321,8 @@ namespace Lesson_09
             CreateEnemies();
         }
 
-        // новый общий метод для очистки объектов
-        void ClearObjects(GameObject[] objects) 
+        // new common method for clearing objects
+        void ClearObjects(GameObject[] objects)
         {
             for (int i = 0; i < objects.Length; i++)
             {
@@ -369,7 +369,7 @@ namespace Lesson_09
             }
         }
 
-        public void DrawFirstFrame(Ship ship, Enemy[] enemies) // теперь Ship передается вместо координат
+        public void DrawFirstFrame(Ship ship, Enemy[] enemies) // now Ship is passed instead of coordinates
         {
             builder[FindIndex(ship.X, ship.Y)] = ship.Symbol;
 
@@ -384,7 +384,7 @@ namespace Lesson_09
             Console.WriteLine(builder);
         }
 
-        public void Render(int oldShipX, Ship ship, List<GameObject> gameObjects)  // теперь Ship передается вместо координат
+        public void Render(int oldShipX, Ship ship, List<GameObject> gameObjects)  // now Ship is passed instead of coordinates
         {
             builder[FindIndex(oldShipX, ship.Y)] = emptyChar;
             builder[FindIndex(ship.X, ship.Y)] = ship.Symbol;
@@ -464,56 +464,56 @@ namespace Lesson_09
             OldY = Y;
         }
     }
-   
+
     class Bullet : GameObject
     {
-        public override char Symbol => direction > 0 ? '^' : '*'; // Если пуля движется вверх (игрок), символ '^', если вниз (враг), символ '*'      
+        public override char Symbol => direction > 0 ? '^' : '*'; // If bullet moves up (player), symbol '^'; if down (enemy), symbol '*'
 
-        int direction; //  Направление движения: 1 — вверх, -1 — вниз
-       
+        int direction; // movement direction: 1 — up, -1 — down
+
         public Bullet(int x, int y, int direction) : base(x, y)
-        {          
-            this.direction = direction; //Конструктор получает начальные координаты и направление пули
+        {
+            this.direction = direction; // constructor receives initial coordinates and bullet direction
         }
 
         public BulletMoveResult Move(int screenHeight, GameObject aim)
         {
             OldY = Y;
-            Y += direction; // Изменяем позицию по вертикали в зависимости от направления
-          
-            if (aim != null && aim.X == X && (Y - aim.Y) * direction >= 0) // Проверка попадания по цели. Сравниваем направление и координаты              
+            Y += direction; // move vertically according to direction
+
+            if (aim != null && aim.X == X && (Y - aim.Y) * direction >= 0) // check hit on target
                 return BulletMoveResult.Hit;
 
-            if (Y > screenHeight - 1 || Y < 2) // Проверка выхода пули за границы экрана               
+            if (Y > screenHeight - 1 || Y < 2) // check bullet out of bounds              
                 return BulletMoveResult.OutOfBounds;
 
             return BulletMoveResult.None;
         }
     }
-  
+
     class Enemy : GameObject
     {
-        public override char Symbol => isShooter ? '&' : '@'; // Стрелок отображается символом '&', обычный враг '@'
+        public override char Symbol => isShooter ? '&' : '@'; // Shooter displayed as '&', normal enemy '@'
 
-        // Стоимость врага в очках при уничтожении.
-        // Если враг стреляет (isShooter == true), он ценнее и даёт 2 очка.
-        // Если враг обычный, даёт 1 очко.
+        // Enemy cost in points when destroyed
+        // If enemy shoots (isShooter == true), it gives 2 points
+        // Otherwise, gives 1 point
         public int Cost => isShooter ? 2 : 1;
 
         float enemySpeed;
         float slowY;
 
-        bool isShooter; // Определяет, умеет ли враг стрелять
-     
-        private int shootTick = 0; // Счётчик тиков для контроля частоты выстрела
-      
-        const int rateOfFire = 12; // Количество игровых тиков между выстрелами врага        
+        bool isShooter; // whether enemy can shoot
+
+        private int shootTick = 0; // tick counter for controlling fire rate
+
+        const int rateOfFire = 12; // number of game ticks between enemy shots        
 
         public Enemy(int x, int y, float startSpeed, bool isShooter) : base(x, y)
-        {           
+        {
             enemySpeed = startSpeed;
             slowY = y + enemySpeed;
-            this.isShooter = isShooter; // Сохраняем информацию, стрелок или нет           
+            this.isShooter = isShooter; // store shooter info           
         }
 
         public bool Move(int shipX, int shipY)
@@ -528,30 +528,30 @@ namespace Lesson_09
             return false;
         }
 
-        // Логика стрельбы врага
+        // Enemy shooting logic
         public Bullet TryShoot(Bullet[] enemyBullets)
-        {          
+        {
             if (!isShooter)
                 return null;
 
             shootTick++;
 
-            //Если достигнут интервал выстрела и нет пули на этой вертикали, стреляем
+            // if fire interval reached and no bullet on this vertical, shoot
             if (shootTick >= rateOfFire && Y > 2 && enemyBullets[X - 1] == null)
-            {               
+            {
                 shootTick = 0;
-                return new Bullet(X, Y - 1, direction: -1); // Пуля врага движется вниз              
+                return new Bullet(X, Y - 1, direction: -1); // enemy bullet moves down              
             }
             return null;
         }
     }
 
-    // Новый класс для игрока, используется как объект вместо координат
+    // New class for player, used as object instead of coordinates
     class Ship : GameObject
     {
         public override char Symbol => '#';
 
-        public Ship(int x, int y) : base(x, y) { }       
+        public Ship(int x, int y) : base(x, y) { }
     }
 
     enum BulletMoveResult

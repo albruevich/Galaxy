@@ -1,8 +1,8 @@
-﻿// ❗ Для переключения между уроками смотрите Program.cs
+﻿// ❗ For switching between lessons, see Program.cs
 
-// Урок 4
-// Учим корабль стрелять несколькими пулями, создаем массив пуль.
-// Переходим от управления одним объектом (пули) к управлению коллекцией объектов.
+// Lesson 4
+// Teaching the ship to shoot multiple bullets, creating an array of bullets.
+// Moving from handling a single object (bullet) to handling a collection of objects.
 
 using System;
 using System.Text;
@@ -19,8 +19,8 @@ namespace Lesson_04
 
         Renderer renderer;
 
-        // Теперь вместо одной пули храним массив пуль. Размер массива ограничивает максимальное количество пуль одновременно.
-        // Пуль будет не больше чем высота экрана, минус пол и потолок
+        // Now, instead of one bullet, we store an array of bullets. The array size limits the maximum number of bullets at the same time.
+        // There will be no more bullets than screen height minus floor and ceiling
         GameObject[] bullets = new GameObject[screenHeight - 2];
 
         public void Run()
@@ -34,9 +34,9 @@ namespace Lesson_04
                 int oldX = shipX;
 
                 HandleInput();
-                MovePlayerBullets(); // Метод теперь двигает ВСЕ пули, а не одну.               
+                MovePlayerBullets(); // The method now moves ALL bullets, not just one.               
 
-                renderer.Render(oldX, shipX, shipY, bullets); // Передаем в Renderer массив пуль вместо одной пули.
+                renderer.Render(oldX, shipX, shipY, bullets); // Pass the bullets array to Renderer instead of a single bullet.
             }
         }
 
@@ -62,37 +62,37 @@ namespace Lesson_04
                 shipX = Math.Min(screenWidth - 2, shipX + 1);
             else if (info.Key == ConsoleKey.UpArrow)
             {
-                // Раньше мы просто проверяли bullet == null.
-                // Теперь нужно найти свободную ячейку в массиве.
+                // Previously we just checked bullet == null.
+                // Now we need to find a free slot in the array.
                 int emptyIndex = -1;
 
-                //Проходим по массиву и ищем null — это свободное место для новой пули.
+                // Loop through the array and find null — this is a free slot for a new bullet.
                 for (int i = 0; i < bullets.Length; i++)
-                    if (bullets[i] == null) // если по текущему индексу i нет пули значит...
+                    if (bullets[i] == null) // if there is no bullet at current index i...
                     {
-                        emptyIndex = i; // ... пустой индекс найден
-                        break; //выход из массива, так как пустой индекс найден
+                        emptyIndex = i; // ... empty index found
+                        break; // exit the loop since we found a free slot
                     }
 
-                if (emptyIndex != -1) // если пустой индекс найден, то создаем пулю
+                if (emptyIndex != -1) // if a free index is found, create a new bullet
                 {
-                    GameObject bullet = new GameObject(shipX, shipY); //создаем объект пули
-                    bullets[emptyIndex] = bullet; //устанавливаем ее в массив, nеперь пули могут существовать параллельно.                    
+                    GameObject bullet = new GameObject(shipX, shipY); // create a bullet object
+                    bullets[emptyIndex] = bullet; // place it in the array; now bullets can exist simultaneously.                    
                 }
             }
         }
 
         void MovePlayerBullets()
         {
-            // Идем с конца массива к началу. Это безопасный подход, если внутри цикла мы удаляем элементы (bullets[i] = null).            
-            // При обратном проходе мы не рискуем пропустить элементы. 
-            // Это хорошая привычка при работе с коллекциями, где возможны удаления.
+            // Loop from the end of the array to the beginning. This is a safe approach if we remove elements inside the loop (bullets[i] = null).            
+            // When iterating backwards, we don't risk skipping elements. 
+            // This is a good habit when working with collections where removals may occur.
             for (int i = bullets.Length - 1; i >= 0; i--)
             {
                 GameObject bullet = bullets[i];
 
                 if (bullet == null)
-                    continue; //если пули нет, то пропускаем этот виток цикла
+                    continue; // if there is no bullet, skip this iteration
 
                 bullet.OldY = bullet.Y;
 
@@ -101,7 +101,7 @@ namespace Lesson_04
                 if (bullet.Y > screenHeight - 1)
                 {
                     renderer.ClearBullet(bullet);
-                    bullets[i] = null; // Теперь мы удаляем конкретную пулю из массива, освобождая место для будущих выстрелов.
+                    bullets[i] = null; // Now we remove the specific bullet from the array, freeing the slot for future shots.
                 }
             }
         }
@@ -155,8 +155,9 @@ namespace Lesson_04
             builder[FindIndex(oldShipX, shipY)] = emptyChar;
             builder[FindIndex(newShipX, shipY)] = shipChar;
 
-            // foreach — это способ пройти по всем элементам массива, не используя индекс           
-            // Каждый элемент массива bullets по очереди попадает в переменную bullet. Это делает код чище и понятнее, если индекс не нужен            
+            // foreach — a way to iterate through all array elements without using an index           
+            // Each element of the bullets array is assigned to the variable bullet in turn. 
+            // This makes the code cleaner and easier to read if the index is not needed            
             foreach (var bullet in bullets)
                 if (bullet != null)
                 {

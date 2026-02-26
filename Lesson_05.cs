@@ -1,9 +1,9 @@
-﻿// ❗ Для переключения между уроками смотрите Program.cs
+﻿// ❗ For switching between lessons, see Program.cs
 
-// Урок 5
-// В этом уроке игра переходит от простого управления объектами к взаимодействию между ними.
-// Мы вводим абстрактный базовый класс, реализуем наследование, добавляем врага и столкновения.
-// Это первый настоящий шаг к архитектуре игры.
+// Lesson 5
+// In this lesson, the game moves from simple object control to interaction between objects.
+// We introduce an abstract base class, implement inheritance, add an enemy, and collisions.
+// This is the first real step toward a game architecture.
 
 using System;
 using System.Text;
@@ -20,20 +20,20 @@ namespace Lesson_05
 
         Renderer renderer;
 
-        // Раньше этот массив был GameObject[]. Теперь массив хранит конкретный тип Bullet.        
-        Bullet[] bullets = new Bullet[screenHeight - 2]; //Максимум пуль на экране (по высоте игрового поля без границ)
+        // Previously this array was GameObject[]. Now it stores the specific type Bullet.        
+        Bullet[] bullets = new Bullet[screenHeight - 2]; // Maximum bullets on screen (by game field height without borders)
 
-        Random rnd = new Random(); // генератор случайных чисел
+        Random rnd = new Random(); // random number generator
 
-        // В игре появляется еще один тип игрового объекта.
-        Enemy enemy = null; //пока единственный объект врага
+        // Another type of game object appears in the game.
+        Enemy enemy = null; // currently the only enemy object
 
         public void Run()
         {
             Init();
             renderer.BuildBoard();
 
-            //Renderer теперь умеет рисовать не только корабль, но и врага.
+            // Renderer can now draw not only the ship but also the enemy.
             renderer.DrawFirstFrame(shipX, shipY, enemy);
 
             while (isGameRunning)
@@ -52,9 +52,9 @@ namespace Lesson_05
             shipX = screenWidth / 2;
             renderer = new Renderer(screenWidth, screenHeight);
 
-            // Создание экземпляра Enemy — теперь используется наследник GameObject.
-            int enemyX = rnd.Next(1, screenWidth - 1); //случайный Х в пределах от 1 до ширины экрана (стенки исключаются)
-            int enemyY = screenHeight - 1;             // Y под потолком (из-за метода FindIndex начало координат внизу)
+            // Creating an instance of Enemy — now using a GameObject descendant.
+            int enemyX = rnd.Next(1, screenWidth - 1); // random X within 1 to screenWidth (excluding walls)
+            int enemyY = screenHeight - 1;             // Y below the ceiling (because FindIndex treats origin at bottom)
             enemy = new Enemy(enemyX, enemyY);
         }
 
@@ -100,18 +100,18 @@ namespace Lesson_05
                 if (bullet == null)
                     continue;
 
-                // Метод возвращает результат движения: попала, вышла за экран или летит дальше.
-                // Удобнее, чем просто true/false.
+                // The method returns the movement result: hit, out of bounds, or continues flying.
+                // More convenient than just true/false.
                 BulletMoveResult result = bullet.Move(screenHeight, enemy);
 
-                //если пуля попала по врагу или вышла за экран, то ...
+                // if the bullet hits the enemy or goes out of bounds ...
                 if (result == BulletMoveResult.OutOfBounds || result == BulletMoveResult.Hit)
                 {
-                    // ... удаляем пулю
+                    // ... remove the bullet
                     renderer.ClearGameObject(bullet);
                     bullets[i] = null;
 
-                    // ... если пуля попала по врагу, то удаляем врага
+                    // ... if the bullet hit the enemy, remove the enemy
                     if (result == BulletMoveResult.Hit)
                     {
                         renderer.ClearGameObject(enemy);
@@ -158,12 +158,12 @@ namespace Lesson_05
             }
         }
 
-        // Теперь метод умеет рисовать не только корабль, но и врага.        
+        // Now the method can draw not only the ship but also the enemy.        
         public void DrawFirstFrame(int shipX, int shipY, Enemy enemy)
         {
             builder[FindIndex(shipX, shipY)] = shipChar;
 
-            // Если враг существует то рисуем его символ
+            // If the enemy exists, draw its symbol
             if (enemy != null)
                 builder[FindIndex(enemy.X, enemy.Y)] = enemy.Symbol;
 
@@ -186,9 +186,9 @@ namespace Lesson_05
             Console.WriteLine(builder);
         }
 
-        // В прошлом уроке был ClearBullet и использовался bulletChar.
-        // Теперь метод универсальный — он принимает любой GameObject и использует его Symbol.
-        // Это первый шаг к полиморфизму.
+        // In the previous lesson there was ClearBullet using bulletChar.
+        // Now the method is universal — it accepts any GameObject and uses its Symbol.
+        // This is the first step toward polymorphism.
         public void ClearGameObject(GameObject go) =>
             builder.Replace(go.Symbol, emptyChar, FindIndex(go.X, go.OldY), 1);
 
@@ -200,14 +200,14 @@ namespace Lesson_05
         }
     }
 
-    // GameObject стал abstract — теперь нельзя создать просто "какой-то объект", но конкретный наследник        
+    // GameObject is now abstract — you cannot create a generic "object" but only a specific descendant        
     abstract class GameObject
     {
         public int Y { get; set; }
         public int X { get; set; }
         public int OldY { get; set; }
 
-        //абстрактное свойство которое ОБЯЗАН реализовать каждый наследник.
+        // abstract property that EACH descendant MUST implement.
         public abstract char Symbol { get; }
 
         public GameObject(int x, int y)
@@ -218,45 +218,45 @@ namespace Lesson_05
         }
     }
 
-    // Bullet наследуется от GameObject, таким образом у него есть все свойства и методы родителя
+    // Bullet inherits from GameObject, so it has all the parent's properties and methods
     class Bullet : GameObject
     {
-        // override — реализация (переопределение) абстрактного свойства родителя
+        // override — implementation (overriding) of the abstract property from parent
         public override char Symbol => '^';
 
-        // : base(x, y) — вызов конструктора родительского класса.
+        // : base(x, y) — call the constructor of the parent class.
         public Bullet(int x, int y) : base(x, y) { }
 
-        // Метод Move отвечает только за движение пули и возвращает результат этого движения.       
+        // The Move method is responsible only for bullet movement and returns the result.       
         public BulletMoveResult Move(int screenHeight, GameObject aim)
         {
             OldY = Y;
             Y++;
 
-            // если координаты пули совпали с координатами врага — считаем, что произошло попадание
+            // if bullet coordinates match enemy coordinates, it's considered a hit
             if (aim != null && X == aim.X && Y >= aim.Y)
                 return BulletMoveResult.Hit;
 
-            // если пуля вышла за пределы экрана — сообщаем об этом
+            // if the bullet goes out of screen bounds, report it
             if (Y > screenHeight - 1)
                 return BulletMoveResult.OutOfBounds;
 
-            // если ничего особенного не произошло — просто продолжаем движение
+            // if nothing special happened — continue movement
             return BulletMoveResult.None;
         }
     }
 
-    // Enemy наследуется от GameObject.
+    // Enemy inherits from GameObject.
     class Enemy : GameObject
     {
-        // override — реализация (переопределение) абстрактного свойства родителя
+        // override — implementation (overriding) of the abstract property from parent
         public override char Symbol => '@';
 
-        // : base(x, y) — вызов конструктора родительского класса.
+        // : base(x, y) — call the constructor of the parent class.
         public Enemy(int x, int y) : base(x, y) { }
     }
 
-    //возможные исходы движения пули 
+    // possible outcomes of bullet movement 
     enum BulletMoveResult
     {
         None,

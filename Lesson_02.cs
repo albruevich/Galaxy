@@ -1,8 +1,8 @@
-﻿// ❗ Для переключения между уроками смотрите Program.cs
+﻿// ❗ For switching between lessons, see Program.cs
 
-// Урок 2
-// Рисуем квадратное игровое поле.
-// Добавляем новую ответственность за отрисовку - класс Renderer.
+// Lesson 2
+// Drawing a square game field.
+// Adding a new responsibility for rendering - the Renderer class.
 
 using System;
 using System.Text;
@@ -12,35 +12,35 @@ namespace Lesson_02
     class Game
     {
         const int screenWidth = 21;
-        const int screenHeight = 12; //высота игрового экрана
+        const int screenHeight = 12; // height of the game screen
         int shipX;
-        const int shipY = 2; // фиксированная высота корабля
+        const int shipY = 2; // fixed height of the ship
         bool isGameRunning = true;
 
-        //Renderer - объект, который отвечает только за отрисовку.
-        //Game теперь хранит только логику (позиция корабля, ввод, цикл), а Renderer — рисует поле и корабль
-        //это разделение ответственности
+        // Renderer - an object responsible only for rendering.
+        // Game now holds only logic (ship position, input, loop), and Renderer draws the field and the ship
+        // this is a separation of concerns
         Renderer renderer;
 
         public void Run()
         {
             Init();
-            renderer.BuildBoard(); //теперь Renderer рисует вместо Game
-            renderer.DrawFirstFrame(shipX, shipY); //теперь Renderer рисует вместо Game
+            renderer.BuildBoard(); // now Renderer draws instead of Game
+            renderer.DrawFirstFrame(shipX, shipY); // now Renderer draws instead of Game
 
             while (isGameRunning)
             {
                 int oldX = shipX;
 
                 HandleInput();
-                renderer.Render(oldX, shipX, shipY); //теперь Renderer рисует вместо Game
+                renderer.Render(oldX, shipX, shipY); // now Renderer draws instead of Game
             }
         }
 
         void Init()
         {
             shipX = screenWidth / 2;
-            renderer = new Renderer(screenWidth, screenHeight); // создаём Renderer (вызывается конструктор класса Renderer)
+            renderer = new Renderer(screenWidth, screenHeight); // create Renderer (calls the constructor of Renderer class)
         }
 
         void HandleInput()
@@ -60,31 +60,31 @@ namespace Lesson_02
         }
     }
 
-    // Класс Renderer, отвечает за всё, что связано с отрисовкой
+    // Renderer class, responsible for everything related to rendering
     class Renderer
     {
-        int screenWidth; // копируется из Game, чтобы Renderer был независимым и сам мог строить поле и считать индексы
-        int screenHeight; // копируется из Game, чтобы Renderer был независимым и сам мог строить поле и считать индексы
+        int screenWidth; // copied from Game so Renderer is independent and can build the field and calculate indexes
+        int screenHeight; // copied from Game so Renderer is independent and can build the field and calculate indexes
 
-        StringBuilder builder; // теперь builder относится к Renderer
+        StringBuilder builder; // now builder belongs to Renderer
 
         const char dotChar = '.';
         const char shipChar = '#';
-        const char wallChar = '|'; //символ стены
-        const char emptyChar = ' '; //пустой символ
+        const char wallChar = '|'; // wall symbol
+        const char emptyChar = ' '; // empty symbol
 
-        //конструктор класса Renderer, вызывается при создании объекта через new
+        // Renderer class constructor, called when creating an object via new
         public Renderer(int width, int height)
         {
-            //присваиваются значения, переданные из Game
+            // assign values passed from Game
             screenWidth = width;
             screenHeight = height;
 
-            //теперь builder создается здесь
+            // builder is now created here
             builder = new StringBuilder();
         }
 
-        // Создание игрового поля с потолком, полом и стенами
+        // Create the game field with ceiling, floor, and walls
         public void BuildBoard()
         {
             for (int bY = 0; bY < screenHeight; bY++)
@@ -92,13 +92,13 @@ namespace Lesson_02
                 for (int bX = 0; bX < screenWidth; bX++)
                 {
                     if (bY == 0 || bY == screenHeight - 1)
-                        builder.Append(dotChar); // потолок и пол
+                        builder.Append(dotChar); // ceiling and floor
                     else if (bX == 0 || bX == screenWidth - 1)
-                        builder.Append(wallChar); // стены
+                        builder.Append(wallChar); // walls
                     else
-                        builder.Append(emptyChar); // пустое пространство
+                        builder.Append(emptyChar); // empty space
                 }
-                builder.Append('\n'); // переход на новую строку
+                builder.Append('\n'); // move to a new line
             }
         }
 
@@ -110,19 +110,19 @@ namespace Lesson_02
 
         public void Render(int oldX, int newX, int y)
         {
-            builder[FindIndex(oldX, y)] = emptyChar; // стираем старую позицию, основываясь на высчитанный индекс
-            builder[FindIndex(newX, y)] = shipChar;  // рисуем новую позицию, основываясь на высчитанный индекс
+            builder[FindIndex(oldX, y)] = emptyChar; // erase old position based on calculated index
+            builder[FindIndex(newX, y)] = shipChar;  // draw new position based on calculated index
 
             Console.SetCursorPosition(0, 0);
             Console.WriteLine(builder);
         }
 
-        //высчитываем индекс элемента в билдере 
+        // calculate the index of the element in the builder
         int FindIndex(int valX, int valY)
         {
-            int y = screenHeight - valY; //отступ сверху до игрового объекта 
-            int width = screenWidth + 1; //ширины экрана + 1 (добавляем 1, так как в каждом ряду есть невидимый '\n')
-            return valX + y * width; //находим индекс корабля 
+            int y = screenHeight - valY; // offset from the top to the game object
+            int width = screenWidth + 1; // screen width + 1 (add 1 because each row has an invisible '\n')
+            return valX + y * width; // find the index of the ship
         }
     }
 }

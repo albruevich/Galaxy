@@ -1,9 +1,9 @@
-﻿// ❗ Для переключения между уроками смотрите Program.cs
+﻿// ❗ For switching between lessons, see Program.cs
 
-// Урок 8
-// Постепенно растет уровень сложности: сперва медленно,
-// но через определенное кол-во игровых циклов увеличиваем скорость новых врагов.
-// Добавляем и показываем счет.
+// Lesson 8
+// Gradually increasing difficulty: first slow,
+// but after a certain number of game cycles we increase the speed of new enemies.
+// Adds and displays the score.
 
 using System;
 using System.Text;
@@ -22,13 +22,13 @@ namespace Lesson_08
         const int enemyAmount = 5;
         int enemySpawns = 0;
 
-        int score = 0; // счёта игрока       
+        int score = 0; // player score       
 
-        const float startEnemySpeed = .12f; // базовая стартовая скорость врагов        
-        const float enemyDeltaSpeed = .02f; // приращение скорости — механизм постепенного усложнения игры
-        const int ticksToAccelerateEnemies = 30; // порог количества игровых циклов до ускорения врагов      
-        float enemySpeed; // текущая скорость врагов теперь хранится в переменной, а не в константе внутри Enemy (как было в уроке 7)
-        int enemyTicks = 0; // счётчик игровых циклов для контроля момента ускорения.       
+        const float startEnemySpeed = .12f; // base starting enemy speed        
+        const float enemyDeltaSpeed = .02f; // speed increment — mechanism for gradually increasing game difficulty
+        const int ticksToAccelerateEnemies = 30; // number of game cycles before enemies accelerate      
+        float enemySpeed; // current enemy speed now stored in a variable, not as a constant inside Enemy (as in lesson 7)
+        int enemyTicks = 0; // game cycle counter to control acceleration timing       
 
         Renderer renderer;
 
@@ -44,7 +44,7 @@ namespace Lesson_08
             Init();
             renderer.BuildBoard();
             renderer.DrawFirstFrame(shipX, shipY, enemies);
-            renderer.UpdateScore(score); // первичный вывод счёта при запуске игры      
+            renderer.UpdateScore(score); // initial display of score at game start      
 
             while (isGameRunning)
             {
@@ -54,7 +54,7 @@ namespace Lesson_08
                 TryRespawnEnemy();
                 MovePlayerBullets();
                 MoveEnemies();
-                TryAccelerateEnemies(); // добавлен этап логики ускорения врагов               
+                TryAccelerateEnemies(); // added stage for enemy speed acceleration               
 
                 if (isGameOver)
                     continue;
@@ -67,7 +67,7 @@ namespace Lesson_08
         {
             shipX = screenWidth / 2;
             renderer = new Renderer(screenWidth, screenHeight);
-            enemySpeed = startEnemySpeed; // инициализация текущей скорости врагов           
+            enemySpeed = startEnemySpeed; // initialize current enemy speed           
 
             CreateEnemies();
         }
@@ -161,7 +161,7 @@ namespace Lesson_08
 
                         enemySpawns++;
 
-                        renderer.UpdateScore(++score); // увеличение счёта при уничтожении врага, и немедленное обновление отображения                       
+                        renderer.UpdateScore(++score); // increase score on enemy destruction and immediately update display                       
                     }
                 }
             }
@@ -177,7 +177,7 @@ namespace Lesson_08
                 if (enemy == null)
                     continue;
 
-                if (enemy.Move(shipX, shipY))  
+                if (enemy.Move(shipX, shipY))
                     isGameOver = true;
 
                 if (isGameOver)
@@ -188,18 +188,18 @@ namespace Lesson_08
             }
         }
 
-        // постепенное увеличение сложности игры
+        // gradual increase of game difficulty
         void TryAccelerateEnemies()
-        {            
-            if (isGameOver) // не ускоряем после окончания игры
+        {
+            if (isGameOver) // don't accelerate after game over
                 return;
-           
-            enemyTicks++;  // увеличиваем игровые тики
-           
-            if (enemyTicks > ticksToAccelerateEnemies)  // проверяем, прошло ли достаточно времени
-            {                
-                enemyTicks = 0; // сбрасываем счётчик тиков                
-                enemySpeed += enemyDeltaSpeed; // увеличиваем скорость врагов
+
+            enemyTicks++;  // increase game ticks
+
+            if (enemyTicks > ticksToAccelerateEnemies)  // check if enough time has passed
+            {
+                enemyTicks = 0; // reset tick counter                
+                enemySpeed += enemyDeltaSpeed; // increase enemy speed
             }
         }
 
@@ -234,7 +234,7 @@ namespace Lesson_08
 
             int posIndex = freePositions[rnd.Next(freePositions.Count)];
 
-            Enemy enemy = new Enemy(posIndex + 1, screenHeight - 1, enemySpeed); // враг теперь создаётся с параметром скорости           
+            Enemy enemy = new Enemy(posIndex + 1, screenHeight - 1, enemySpeed); // enemy now created with speed parameter           
 
             enemies[posIndex] = enemy;
             renderedObjects.Add(enemy);
@@ -244,9 +244,9 @@ namespace Lesson_08
         {
             isGameOver = false;
             shipX = screenWidth / 2;
-            enemySpeed = startEnemySpeed; // сброс скорости врагов
-            score = 0; // сброс счёта при рестарте
-            enemyTicks = 0; // сброс при рестарте
+            enemySpeed = startEnemySpeed; // reset enemy speed
+            score = 0; // reset score on restart
+            enemyTicks = 0; // reset tick counter
 
             for (int i = 0; i < enemies.Length; i++)
             {
@@ -264,8 +264,8 @@ namespace Lesson_08
                 bullets[i] = null;
             }
 
-            renderer.ClearBoard(true); // метод ClearBoard теперь умеет учитывать, нужно ли очищать строку счёта.            
-            renderer.UpdateScore(score); // обновление счёта после рестарта.           
+            renderer.ClearBoard(true); // ClearBoard now considers whether to clear the score line            
+            renderer.UpdateScore(score); // update score after restart           
 
             CreateEnemies();
         }
@@ -343,7 +343,7 @@ namespace Lesson_08
 
         public void PrintGameOver()
         {
-            ClearBoard(false); // при GameOver счёт не очищается (передаётся false).          
+            ClearBoard(false); // don't clear score on GameOver          
 
             const string text = "GAME OVER";
             DrawText(text, screenWidth / 2 - text.Length / 2, screenHeight / 2 + 1);
@@ -353,8 +353,8 @@ namespace Lesson_08
 
         public void ClearBoard(bool clearScore)
         {
-            int deltaWidth = clearScore ? 0 : screenWidth + 1; // логика частичной очистки экрана, чтобы можно было сохранить строку счёта
-           
+            int deltaWidth = clearScore ? 0 : screenWidth + 1; // partial screen clearing logic to preserve score line
+
             for (int i = 0; i < builder.Length - deltaWidth; i++)
             {
                 char c = builder[i];
@@ -377,8 +377,8 @@ namespace Lesson_08
             Console.WriteLine(builder);
         }
 
-        public void UpdateScore(int score) => DrawText($"score: {score}", 0, 0); // выделенный метод для обновления строки счёта.
-       
+        public void UpdateScore(int score) => DrawText($"score: {score}", 0, 0); // dedicated method to update the score line
+
         int FindIndex(int valX, int valY)
         {
             int y = screenHeight - valY;
@@ -428,12 +428,12 @@ namespace Lesson_08
     {
         public override char Symbol => '@';
 
-        float enemySpeed; // скорость врага теперь не константа, а задаётся извне через конструктор.         
+        float enemySpeed; // enemy speed now not constant, passed from outside via constructor         
         float slowY;
 
         public Enemy(int x, int y, float startSpeed) : base(x, y)
         {
-            enemySpeed = startSpeed; // получаем текущую скорость из Game.            
+            enemySpeed = startSpeed; // get current speed from Game            
             slowY = y + enemySpeed;
         }
 
