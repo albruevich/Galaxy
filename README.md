@@ -16,10 +16,10 @@ They also provide a **basic understanding of game development**, creating a foun
 ![Game Loop](docs/code_example.png)
 
 **Purpose:**
-  - Designed as an educational sequence, not for entertainment
-  - Helps beginners **gain practical experience in C#** while gradually learning more advanced programming concepts
-  - Bridges the gap between learning programming fundamentals and creating actual games
-  - Encourages experimenting with object-oriented design, game loops, and rendering logic
+  - Help beginners learn C# through practical, incremental development of a simple game
+  - Build a solid understanding of programming fundamentals and object-oriented principles
+  - Introduce fundamental game development concepts with a strong focus on logic, structure, and game loops
+  - Serve as a foundation for further learning in game development and Unity
 
 **Controls:**
   - Left/Right arrows — move the ship
