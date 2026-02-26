@@ -51,6 +51,6 @@ They also provide a **basic understanding of game development**, creating a foun
 
 **Technical Configuration:**
   - Select which lesson to run in Program.cs:
-    - //❗ Set here the lesson number you want to run: 1 - 10
+        //❗ Set here the lesson number you want to run: 1 - 10
 	const int lesson = 1;
   - Change the number from 1 to 10 to launch the corresponding lesson.
