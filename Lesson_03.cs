@@ -9,12 +9,13 @@ using System.Text;
 
 namespace Lesson_03
 {
+    // Main Game class, handles input, game state, and updates
     class Game
     {
         const int screenWidth = 21;
         const int screenHeight = 12;
         int shipX;
-        const int shipY = 2;
+        const int shipY = 2;  // vertical position of the ship (fixed)
         bool isGameRunning = true;
 
         Renderer renderer;
