@@ -1,4 +1,6 @@
 # Galaxy
+![Language](https://img.shields.io/badge/language-C%23-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 Educational C# project that simulates a simple game with a player-controlled ship and incoming enemies.
 
