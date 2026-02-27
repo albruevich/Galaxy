@@ -58,3 +58,6 @@ The project is structured as a sequence of lessons, each extending the previous 
     -    const int lesson = 1;
   - Change the number from 1 to 10 to launch the corresponding lesson.
   - To study the implementation of a specific lesson, open the corresponding Lesson_N.cs file located in the root project folder (Galaxy).
+
+
+Contributions are welcome — see CONTRIBUTORS.md.
