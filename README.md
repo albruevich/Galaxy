@@ -60,4 +60,7 @@ The project is structured as a sequence of lessons, each extending the previous 
   - To study the implementation of a specific lesson, open the corresponding Lesson_N.cs file located in the root project folder (Galaxy).
 
 
+
+If you find this project useful, a ⭐ would mean a lot.
+
 Contributions are welcome — see CONTRIBUTORS.md.
