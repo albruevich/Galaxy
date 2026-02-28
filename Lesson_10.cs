@@ -401,16 +401,17 @@ namespace Lesson_10
             Console.SetCursorPosition(0, screenHeight + 2);
         }
 
+        // Draw the object directly to the console, bypassing the StringBuilder
         void DrawColoredObject(GameObject go)
         {
-            Console.SetCursorPosition(go.X, screenHeight - go.Y);
-            Console.ForegroundColor = go.Color;
-            Console.Write(go.Symbol);
+            Console.SetCursorPosition(go.X, screenHeight - go.Y); // manually position the cursor (Y inverted)            
+            Console.ForegroundColor = go.Color; // use the color stored in the object          
+            Console.Write(go.Symbol); // draw the symbol on top of the already rendered screen (background)
         }
 
         public void PrintGameOver(int newHiScore = 0)
         {
-            // clear only inner area, do not touch border
+            // clear only the inner area, without touching the border
             for (int x = 1; x < screenWidth - 1; x++)
                 for (int y = 1; y < screenHeight - 1; y++)
                 {
@@ -418,9 +419,11 @@ namespace Lesson_10
                     Console.Write(emptyChar);
                 }
 
+            // text offsets change dynamically when there is a new high score
             int deltaG = 1;
             int deltaS = -1;
 
+            // if there is a new high score — display an additional line
             if (newHiScore > 0)
             {
                 deltaG = 2;
@@ -436,11 +439,14 @@ namespace Lesson_10
             const string text2 = "SPACE TO PLAY";
             DrawText(text2, screenWidth / 2 - text2.Length / 2, screenHeight / 2 + deltaS);
 
-            Console.SetCursorPosition(0, screenHeight + 2);
+            Console.SetCursorPosition(0, screenHeight + 2); // move the cursor below the screen after drawing
         }
 
         public void DrawText(string text, int x, int y, ConsoleColor color = ConsoleColor.White)
         {
+            // text is no longer written to the StringBuilder
+            // now text can be drawn in any color
+
             int consoleY = screenHeight - y;
             Console.SetCursorPosition(x, consoleY);
             Console.ForegroundColor = color;
@@ -453,8 +459,13 @@ namespace Lesson_10
         public int Y { get; set; }
         public int X { get; set; }
 
+        // oldY is no longer needed because the renderer first clears the entire screen
+        // using the builder (only walls and empty spaces are drawn)
+        // then each colored symbol is drawn individually
+
         public abstract char Symbol { get; }
 
+        // added Color property to support colored objects
         public virtual ConsoleColor Color => ConsoleColor.White;
 
         public GameObject(int x, int y)
@@ -468,6 +479,7 @@ namespace Lesson_10
     {
         public override char Symbol => direction > 0 ? '^' : '*';
 
+        // different colors for player and enemy bullets
         public override ConsoleColor Color => direction > 0 ? ConsoleColor.Cyan : ConsoleColor.Red;
 
         int direction;
@@ -495,6 +507,7 @@ namespace Lesson_10
     {
         public override char Symbol => isShooter ? '&' : '@';
 
+        // shooters now have a distinct color
         public override ConsoleColor Color => isShooter ? ConsoleColor.Red : ConsoleColor.Yellow;
 
         public int Cost => isShooter ? 2 : 1;
@@ -546,29 +559,36 @@ namespace Lesson_10
     {
         public override char Symbol => '#';
 
+        // the ship is now colored
         public override ConsoleColor Color => ConsoleColor.Cyan;
 
         public Ship(int x, int y) : base(x, y) { }
     }
 
+    // new class for working with the high score file
     class FileManager
     {
+        // path to the high score file using the system ApplicationData folder
         static readonly string HiScorePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "Galaxy", "hiscore.txt");
 
+        // loading the high score
         public int LoadHiScore()
         {
             int hiScore = 0;
 
-            try
+            try // Attempt to read the high score file
             {
+                // Check if the file exists
                 if (File.Exists(HiScorePath))
                 {
+                    // If the file exists, try to parse the number
                     if (int.TryParse(File.ReadAllText(HiScorePath), out int value))
                         hiScore = value;
                 }
+                // If the file does not exist — that's fine, start with a score of 0
             }
-            catch (Exception ex)
+            catch (Exception ex) // Catch real reading errors, not related to missing file
             {
                 Console.WriteLine($"Error: {ex.Message}");
             }
@@ -576,19 +596,24 @@ namespace Lesson_10
             return hiScore;
         }
 
+        // Method to save the player's high score to a file
         public void SaveHiScore(int hiScore)
         {
-            try
+            try // Begin try block — we "attempt" to run code that might throw an error
             {
+                // Get the path to the folder where the high score file will be stored
                 string dir = Path.GetDirectoryName(HiScorePath);
 
+                // Check if this folder exists. If not — create it                
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 
+                // Write the high score to the file as text. If the file doesn't exist — it will be created automatically                
                 File.WriteAllText(HiScorePath, hiScore.ToString());
             }
-            catch (Exception ex)
+            catch (Exception ex) // Catch block "catches" any errors that occurred in try
             {
+                // If something goes wrong (e.g., no write permissions), display an error message                               
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
