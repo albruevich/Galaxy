@@ -60,6 +60,9 @@ The project is structured as a sequence of lessons, each extending the previous 
 3. To study the implementation of a specific lesson, open the corresponding Lesson_N.cs file in the root project folder (Galaxy).
 4. Press F5 to run.
 
+**Contact / Support**
+- If you have questions, suggestions, or issues with the project, please use the **[GitHub Discussions](https://github.com/albruevich/Galaxy/discussions)** page.  
+
 **Other**
 
 - If you find this project useful, a ⭐ would mean a lot.
