@@ -12,24 +12,24 @@ The project is structured as a sequence of lessons, each extending the previous 
 ## Code Example
 ![Game Loop](docs/code_example.png)
 
-**Purpose:**
+**Purpose**
 - Helps beginners learn C# through practical, step-by-step development of a simple game  
 - Builds a solid understanding of programming fundamentals and object-oriented principles  
 - Introduces fundamental game development concepts with a focus on logic, structure, and game loops  
 - Provides a foundation for further learning in game development, including Unity 
 
-**Controls:**
+**Controls**
 - **Left / Right arrows** — move the ship
 - **Up arrow** — shoot
 - **Esc** — exit the project
 
-**Game:**
+**Game**
 - The game updates the frame after each player action
 - The game is turn-based rather than real-time
 - In later lessons, enemies shoot, and bullets move independently
 - Score increases by destroying enemies, with higher rewards for shooting enemies
 
-**Lessons:**
+**Lessons**
 - 10 lessons in total. Each lesson gradually increases in difficulty and expands on the previous one
 - Each lesson introduces a separate `Game` class with a `Run()` method
 - Comments in the code describe only the new elements introduced in the current lesson
@@ -45,7 +45,7 @@ The project is structured as a sequence of lessons, each extending the previous 
   - Enemy movement and shooting logic
   - High score management using file storage
 
-**Notes:**
+**Notes**
 - Graphics are simple, text-based symbols  
 - The focus is on **understanding C# and game development concepts**, not creating a polished game  
 - Each lesson introduces only the new features for that lesson, making it easier to follow and understand  
@@ -54,7 +54,7 @@ The project is structured as a sequence of lessons, each extending the previous 
 - Visual Studio 
 - Windows / macOS / Linux
 
-## How to Run:
+## How to Run
 1. Open the solution in Visual Studio.
 2. In `Program.cs`, set the lesson number you want to run (choose 1–10)
 3. Press F5 to run.
