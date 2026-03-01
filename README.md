@@ -21,7 +21,7 @@ The project is structured as a sequence of lessons, each extending the previous 
 **Controls**
 - **Left / Right arrows** — move the ship
 - **Up arrow** — shoot
-- **Esc** — exit the project
+- **Esc** — exit the game
 
 **Game**
 - The game updates the frame after each player action
