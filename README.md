@@ -58,7 +58,7 @@ The project is structured as a sequence of lessons, each extending the previous 
 1. Open the solution in Visual Studio.
 2. In `Program.cs`, set the lesson number you want to run (choose 1–10)
 3. Press F5 to run.
-4. To study the implementation of a specific lesson, open the corresponding Lesson_N.cs file in the root project folder (Galaxy).
+4. To study the implementation of a specific lesson, open the corresponding `Lesson_N.cs` file in the root project folder (Galaxy).
 
 ##
 **Contact / Support**
