@@ -51,7 +51,7 @@ The project is structured as a sequence of lessons, each extending the previous 
 - Each lesson introduces only the new features for that lesson, making it easier to follow and understand  
 
 ## Requirements 
-- Visual Studio 2022 
+- Visual Studio 
 - Windows / macOS / Linux
 
 ## How to Run:
