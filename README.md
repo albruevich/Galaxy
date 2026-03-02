@@ -58,7 +58,6 @@ The project is structured as a sequence of lessons, each extending the previous 
 ### macOS
 - Visual Studio for Mac 2019
 
----
 
 ## How to Run
 
@@ -73,7 +72,6 @@ The project is structured as a sequence of lessons, each extending the previous 
 3. Press **F5** to run.
 4. To study the implementation of a specific lesson, open the corresponding `Lesson_N.cs` file in the root project folder (`Galaxy`).
 
----
 
 ##
 **Contact / Support**
