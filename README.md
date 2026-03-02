@@ -66,6 +66,22 @@ The project is structured as a sequence of lessons, each extending the previous 
 4. Press **F5** to run.
 5. To study the implementation of a specific lesson, open the corresponding `Lesson_N.cs` file
 
+```md
+### macOS (Visual Studio Code)
+This is an alternative way to run the project without Visual Studio.
+
+Requires:
+- Visual Studio Code
+- .NET SDK
+
+Run:
+1. Open the project folder in **Visual Studio Code**.
+2. From the top menu, select **Terminal → New Terminal**.
+3. Run the command below in the terminal:
+
+```bash
+dotnet run
+
 ##
 **Contact / Support**
 - If you have questions, suggestions, or issues with the project, please use the **[GitHub Discussions](https://github.com/albruevich/Galaxy/discussions)** page.  
