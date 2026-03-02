@@ -58,7 +58,8 @@ The project is structured as a sequence of lessons, each extending the previous 
 ### macOS
 - Visual Studio for Mac 2019
 
-Line one␠␠
+Line one<br>
+Line two
 
 ## How to Run
 
