@@ -56,8 +56,7 @@ The project is structured as a sequence of lessons, each extending the previous 
 - Visual Studio 2022
 
 **macOS**
-- Visual Studio for Mac 2019<br><br>
-
+- Visual Studio for Mac 2019<br>
 
 ### How to Run
 
@@ -66,7 +65,6 @@ The project is structured as a sequence of lessons, each extending the previous 
 3. In `Program.cs`, set the lesson number you want to run (choose **1–10**).
 4. Press **F5** to run.
 5. To study the implementation of a specific lesson, open the corresponding `Lesson_N.cs` file
-
 
 ##
 **Contact / Support**
