@@ -61,16 +61,11 @@ The project is structured as a sequence of lessons, each extending the previous 
 
 ### How to Run
 
-**Windows**
-1. Open `Galaxy.sln` in **Visual Studio 2022**.
-
-**macOS**
-1. Open `Galaxy_Mac/Galaxy.sln` in **Visual Studio for Mac 2019**.
-
-**Windows or macOS**
-2. In `Program.cs`, set the lesson number you want to run (choose **1–10**).
-3. Press **F5** to run.
-4. To study the implementation of a specific lesson, open the corresponding `Lesson_N.cs` file in the root project folder (`Galaxy`).
+1. **Windows:** Open `Galaxy.sln` in **Visual Studio 2022**.
+2. **macOS:** Open `Galaxy_Mac/Galaxy.sln` in **Visual Studio for Mac 2019**.
+3. In `Program.cs`, set the lesson number you want to run (choose **1–10**).
+4. Press **F5** to run.
+5. To study the implementation of a specific lesson, open the corresponding `Lesson_N.cs` file
 
 
 ##
