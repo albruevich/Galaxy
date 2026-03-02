@@ -56,7 +56,7 @@ The project is structured as a sequence of lessons, each extending the previous 
 - Visual Studio 2022
 
 ### macOS
-- Visual Studio for Mac 2019<br><br><br><br>
+- Visual Studio for Mac 2019<br><br>
 
 
 
