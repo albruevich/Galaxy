@@ -66,7 +66,7 @@ The project is structured as a sequence of lessons, each extending the previous 
 4. Press **F5** to run.
 5. To study the implementation of a specific lesson, open the corresponding `Lesson_N.cs` file
 
-### macOS (Visual Studio Code)
+### Visual Studio Code
 This is an alternative way to run the project without Visual Studio.
 
 Requires:
@@ -76,10 +76,7 @@ Requires:
 Run:
 1. Open the project folder in **Visual Studio Code**.
 2. From the top menu, select **Terminal → New Terminal**.
-3. Run the command below in the terminal:
-
-```bash
-dotnet run
+3. Run the command below in the terminal: dotnet run
 
 ##
 **Contact / Support**
