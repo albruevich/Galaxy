@@ -58,6 +58,11 @@ namespace Lesson_10
         public void Run()
         {
             Init();
+
+            // Needed for terminal builds: clears leftover console output.
+            // Visual Studio does this automatically, terminal execution does not.
+            renderer.Clear();
+
             renderer.BuildBoard();
             // Render now accepts score and hiScore
             renderer.Render(renderedObjects, score, hiScore);
@@ -359,6 +364,8 @@ namespace Lesson_10
             screenHeight = height;
             backgroundBuilder = new StringBuilder();
         }
+
+        public void Clear() => Console.Clear();        
 
         public void BuildBoard()
         {
