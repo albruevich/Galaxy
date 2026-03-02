@@ -50,15 +50,30 @@ The project is structured as a sequence of lessons, each extending the previous 
 - The focus is on **understanding C# and game development concepts**, not creating a polished game  
 - Each lesson introduces only the new features for that lesson, making it easier to follow and understand  
 
-## Requirements 
-- Visual Studio 
-- Windows / macOS / Linux
+## Requirements
+
+### Windows
+- Visual Studio 2022
+
+### macOS
+- Visual Studio for Mac 2019
+
+---
 
 ## How to Run
-1. Open the solution in Visual Studio.
-2. In `Program.cs`, set the lesson number you want to run (choose 1–10)
-3. Press F5 to run.
-4. To study the implementation of a specific lesson, open the corresponding `Lesson_N.cs` file in the root project folder (Galaxy).
+
+### Windows 
+1. Open `Galaxy.sln` in **Visual Studio 2022**.
+
+### macOS 
+1. Open `Galaxy_Mac/Galaxy.sln` in **Visual Studio for Mac 2019**.
+
+### Windows or macOS
+2. In `Program.cs`, set the lesson number you want to run (choose **1–10**).
+3. Press **F5** to run.
+4. To study the implementation of a specific lesson, open the corresponding `Lesson_N.cs` file in the root project folder (`Galaxy`).
+
+---
 
 ##
 **Contact / Support**

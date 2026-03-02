@@ -1,47 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">anycpu</Platform>
-    <ProjectGuid>{9D88D977-D07D-4C88-9BBB-E0FAA2D89360}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Galaxy</RootNamespace>
-    <AssemblyName>Galaxy</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|anycpu' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ExternalConsole>true</ExternalConsole>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|anycpu' ">
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ExternalConsole>true</ExternalConsole>
-  </PropertyGroup>
+
+<!-- НЕ компилировать legacy-папку -->
   <ItemGroup>
-    <Reference Include="System" />
+    <Compile Remove="Galaxy_Mac/**" />
+    <None Remove="Galaxy_Mac/**" />
+    <EmbeddedResource Remove="Galaxy_Mac/**" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Lesson_01.cs" />
-    <Compile Include="Lesson_02.cs" />
-    <Compile Include="Lesson_03.cs" />
-    <Compile Include="Lesson_04.cs" />
-    <Compile Include="Lesson_05.cs" />
-    <Compile Include="Lesson_06.cs" />
-    <Compile Include="Lesson_07.cs" />
-    <Compile Include="Lesson_08.cs" />
-    <Compile Include="Lesson_09.cs" />
-    <Compile Include="Lesson_10.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>
