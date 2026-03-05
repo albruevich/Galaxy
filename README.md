@@ -62,7 +62,7 @@ The project is organized as **10 step-by-step lessons**, each introducing new me
 ### How to Run
 
 1. **Windows:** Open `Galaxy.sln` in **Visual Studio 2022**.
-2. **macOS:** Open `Galaxy_Mac/Galaxy.sln` in **Visual Studio for Mac 2019**.
+2. **macOS:** Open `Galaxy_Mac/Galaxy.sln` in **Visual Studio for Mac**.
 3. In `Program.cs`, set the lesson number you want to run (choose **1–10**).
 4. Press **F5** to run.
 5. To study the implementation of a specific lesson, open the corresponding `Lesson_N.cs` file
