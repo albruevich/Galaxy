@@ -2,21 +2,22 @@
 ![Language](https://img.shields.io/badge/language-C%23-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-Learn C# by building a simple console space shooter.
+Learn C# by building a simple console space shooter in 10 step-by-step lessons.
 
 ## Demo
 <img src="docs/gameplay.gif" width="300">
 
+
 The project is organized as **10 step-by-step lessons**, each introducing new mechanics and programming concepts.
 
-## Example Code
+## Code Example
 <img src="docs/code_example.png" width="650">
 
 **Purpose**
-- Helps beginners learn C# through practical, step-by-step development of a simple game  
-- Builds a solid understanding of programming fundamentals and object-oriented principles  
-- Introduces fundamental game development concepts with a focus on logic, structure, and game loops  
-- Provides a foundation for further learning in game development, including Unity 
+- Help beginners learn C# through practical development of a simple game  
+- Build a solid understanding of programming fundamentals and OOP principles  
+- Introduce basic game development concepts such as game loops, input handling, and rendering  
+- Provide a foundation for further learning in game development, including Unity
 
 **Controls**
 - **Left / Right arrows** — move the ship
@@ -56,7 +57,7 @@ The project is organized as **10 step-by-step lessons**, each introducing new me
 - Visual Studio 2022
 
 **macOS**
-- Visual Studio for Mac 2019<br>
+- Visual Studio for Mac 2019 or later<br>
 
 ### How to Run
 
@@ -75,8 +76,8 @@ Requires:
 
 Run:
 1. Open the project folder in **Visual Studio Code**.
-2. From the top menu, select **Terminal → New Terminal**.
-3. Run the command below in the terminal: dotnet run
+2. Open a terminal.
+3. Run: `dotnet run --project src/Galaxy.csproj`
 
 ##
 **Contact / Support**
@@ -85,4 +86,4 @@ Run:
 **Other**
 
 - If you find this project useful, a ⭐ would mean a lot.
-- Contributions are welcome — see CONTRIBUTORS.md.
+- Contributions are welcome — see `CONTRIBUTORS.md`.
