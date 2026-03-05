@@ -5,9 +5,7 @@
 Learn C# by building a simple console space shooter.
 
 ## Demo
-<p align="center">
-  <img src="docs/gameplay.gif" width="300">
-</p>
+<img src="docs/gameplay.gif" width="300">
 
 The project is organized as **10 step-by-step lessons**, each introducing new mechanics and programming concepts.
 
