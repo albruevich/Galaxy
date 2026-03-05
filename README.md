@@ -1,15 +1,16 @@
 # Galaxy
-![Language](https://img.shields.io/badge/language-C%23-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
 
-An educational C# project that simulates a simple console game where you control a ship and defend against incoming enemies.
-
-The project is structured as a sequence of lessons, each extending the previous one and gradually increasing in complexity.
+Learn C# by building a simple console space shooter.
 
 ## Demo
 ![Gameplay](docs/gameplay.gif)
 
-## Code Example
+The project is organized as **10 step-by-step lessons**, each introducing new mechanics and programming concepts.
+
+![Language](https://img.shields.io/badge/language-C%23-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+## Example Code
 ![Game Loop](docs/code_example.png)
 
 **Purpose**
