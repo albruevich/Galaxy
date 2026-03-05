@@ -10,7 +10,7 @@ Learn C# by building a simple console space shooter.
 The project is organized as **10 step-by-step lessons**, each introducing new mechanics and programming concepts.
 
 ## Example Code
-<img src="docs/code_example.png" width="800">
+<img src="docs/code_example.png" width="500">
 
 **Purpose**
 - Helps beginners learn C# through practical, step-by-step development of a simple game  
