@@ -1,19 +1,18 @@
 # Galaxy
+![Language](https://img.shields.io/badge/language-C%23-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 Learn C# by building a simple console space shooter.
 
 ## Demo
-![Gameplay](docs/gameplay.gif)
+<p align="center">
+  <img src="docs/gameplay.gif" width="300">
+</p>
 
 The project is organized as **10 step-by-step lessons**, each introducing new mechanics and programming concepts.
 
-![Language](https://img.shields.io/badge/language-C%23-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-
 ## Example Code
-<p align="center">
-  <img src="docs/gameplay.gif" width="360">
-</p>
+![Game Loop](docs/code_example.png)
 
 **Purpose**
 - Helps beginners learn C# through practical, step-by-step development of a simple game  
