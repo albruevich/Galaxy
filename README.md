@@ -11,7 +11,9 @@ The project is organized as **10 step-by-step lessons**, each introducing new me
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Example Code
-![Game Loop](docs/code_example.png)
+<p align="center">
+  <img src="docs/gameplay.gif" width="360">
+</p>
 
 **Purpose**
 - Helps beginners learn C# through practical, step-by-step development of a simple game  
